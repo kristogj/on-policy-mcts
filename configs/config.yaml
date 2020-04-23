@@ -45,6 +45,9 @@ topp_config:
   # play of the TOPP
   G: 5
 
+  # Folder to load all agents from
+  load_path: "./pretrained"
+
 
 
 
