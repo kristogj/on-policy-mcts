@@ -1,10 +1,17 @@
+game_config:
+  # What game should be played
+  game_type: "hex"
 
-# Size of Hex board where 3 <= size <= 10
-board_size: 3
+  hex:
+    # Size of Hex board where 3 <= size <= 10
+    board_size: 3
 
-MCTS:
+  # Turn on/off game statistic/prints during games
+  verbose: 0
+
+mcts_config:
   # Number of episodes (actual games played) in MCTS
-  episodes: 10
+  episodes: 200
 
   # Number of simulations done in MCTS before every actual action in the game
   num_sim: 500
@@ -12,10 +19,10 @@ MCTS:
   # Exploration constant
   c: 1
 
-  # Turn on/off game statistic/prints during games
-  verbose: 0
+  # Which player should start
+  starting_player: 1
 
-ANET:
+anet_config:
   # Learning rate for the neural net used by the actor
   lr_actor: 0.01
 
@@ -23,12 +30,12 @@ ANET:
   actor_layer_specs: [15, 64, 1]
 
   # Activation function for each layer e.g linear, sigmoid, tanh, relu
-  actor_layer_function: ["linear", "relu", "relu"]
+  actor_layer_func: ["relu", "relu"]
 
   # Optimizer used for training actor e.g adagrad, sgd, rmsprop, adam
-  actor_optimizer: "adam"
+  actor_optim: "adam"
 
-TOPP:
+topp_config:
   # Number of times to save the current state of the actor during training.
   # For example, if you are training for a total of 200 episodes with M=5, you will have ANETs trained for 0, 50, 100,
   # 150 and 200 episodes.
