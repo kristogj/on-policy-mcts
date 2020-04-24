@@ -16,13 +16,14 @@ class StateManager:
         """
         self.game = get_new_game(self.game_config)
 
-    def get_child_nodes(self, state):
+    def get_child_nodes(self, player, state):
         """
         Given the state, return all child nodes possible
-        :param state:
+        :param player: int - Player making an action from that state
+        :param state: list[int]
         :return:
         """
-        legal_actions = self.game.get_legal_actions(state)
+        legal_actions = self.game.get_legal_actions(player, state)
         new_states = [self.game.get_next_state(state, action) for action in legal_actions]
         return [Node(state, action) for state, action in zip(new_states, legal_actions)]
 

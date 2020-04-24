@@ -1,9 +1,9 @@
 class Cell:
 
-    def __init__(self, row, column, is_peg):
+    def __init__(self, row, column, player):
         self.row, self.column = row, column  # Location on board
         self.neighbours = {}  # Neighbour cells on board
-        self.is_peg = is_peg  # Boolean telling if it is a peg or if it is empty
+        self.player = player  # Which player owns this cell
 
     def add_neighbour(self, cell, pattern):
         """
@@ -22,8 +22,23 @@ class Cell:
         """
         return self.neighbours.values()
 
+    def get_player(self):
+        """
+        Return the player that occupies this cell
+        :return: int
+        """
+        return self.player
+
+    def set_player(self, player):
+        """
+        Set player value of this cell to player
+        :param player: int
+        :return: None
+        """
+        self.player = player
+
     def __str__(self):
-        return "({},{})".format(self.row, self.column)
+        return "(P{})".format(self.player)
 
     def __repr__(self):
-        return "({},{},{})".format(self.row, self.column, self.is_peg)
+        return "({})".format(self.player)
