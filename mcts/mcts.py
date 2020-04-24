@@ -65,7 +65,7 @@ class MonteCarloSearchTree:
         :return:
         """
         # Get all legal child states from leaf state
-        leaf.children = self.state_manager.get_child_nodes(leaf.state)
+        leaf.children = self.state_manager.get_child_nodes(leaf.player, leaf.state)
 
         # Set leaf as their parent node
         child_player = get_next_player(leaf.player)
@@ -82,13 +82,13 @@ class MonteCarloSearchTree:
         :return: int - The player who won the simulated game
         """
         current_node = node
-        children = self.state_manager.get_child_nodes(current_node.state)
+        children = self.state_manager.get_child_nodes(current_node.player, current_node.state)
         player = node.player
         while len(children) != 0:
             # Use the default policy (random) to select a child
             current_node = random.choice(children)
             player = get_next_player(player)
-            children = self.state_manager.get_child_nodes(current_node.state)
+            children = self.state_manager.get_child_nodes(player, current_node.state)
         winner = get_next_player(player)  # Winner was actually the prev player who made a move
         return int(winner == 1)
 

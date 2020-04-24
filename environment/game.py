@@ -33,6 +33,10 @@ class Game(ABC):
     def get_next_state(self, state, action):
         pass
 
+    @abstractmethod
+    def get_current_state(self):
+        pass
+
 
 class Hex(Game):
 
@@ -82,7 +86,15 @@ class Hex(Game):
         """
         if len(state) != self.size ** 2:
             raise ValueError("Illegal state given to get_legal_actions")
-        return [HexAction(player, cell) for cell in self.get_cells() if cell.get_player() == 0]
+        self.update_state(state)
+        return [HexAction(player, cell.coord) for cell in self.get_cells() if cell.get_player() == 0]
+
+    def get_current_state(self):
+        """
+        Return the current state of the board - which in this case is a list of a cells player
+        :return: list[int]
+        """
+        return [cell.player for cell in self.get_cells()]
 
     def get_next_state(self, state, action):
         self.update_state(state)
@@ -192,10 +204,8 @@ class Hex(Game):
         :param action: HexAction
         :return: None
         """
-        player, cell = action.player, action.cell
-        if cell.player > 0:
-            raise ValueError("Trying to update value of a cell that is already assigned a player")
-        cell.set_player(player)
+        player, (row, col) = action.player, action.coord
+        self.board[row][col].set_player(player)
 
     def __str__(self):
         res = ""

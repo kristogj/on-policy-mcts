@@ -5,6 +5,7 @@ import random
 from utils import get_next_player, get_new_game, save_model
 from actor import Actor
 import torch
+from replay_buffer import ReplayBuffer
 
 
 class GameSimulator:
@@ -51,7 +52,7 @@ class GameSimulator:
         save_interval = int(self.episodes / (self.save_interval - 1))
 
         # TODO: Clear Replay Buffer (RBUF)
-        rbuf = None
+        rbuf = ReplayBuffer()
 
         # Initialize ANET
         actor = Actor(self.anet_config)
@@ -93,7 +94,7 @@ class GameSimulator:
                 new_root = mcts.select_actual_action(D, player)
 
                 # Perform this action, moving the game from state s -> s´
-                game.perform_action(player, new_root.action)
+                game.perform_action(new_root.action)
 
                 # Update player
                 player = get_next_player(player)

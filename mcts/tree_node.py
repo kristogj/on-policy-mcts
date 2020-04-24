@@ -42,4 +42,7 @@ class Node:
         return self.children
 
     def __str__(self):
-        return "State: {} Action: {} Win: {} Total: {}".format(self.state, self.action, self.win, self.total)
+        return "State: {} Action: {} Value: {} Total: {}".format(self.state, self.action, self.value, self.total)
+
+    def __repr__(self):
+        return "{}, {}".format(self.state, self.action)

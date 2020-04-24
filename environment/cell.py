@@ -2,6 +2,7 @@ class Cell:
 
     def __init__(self, row, column, player):
         self.row, self.column = row, column  # Location on board
+        self.coord = (row, column)
         self.neighbours = {}  # Neighbour cells on board
         self.player = player  # Which player owns this cell
 
