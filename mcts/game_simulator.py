@@ -84,8 +84,7 @@ class GameSimulator:
                     # 4. Backward propagation
                     mcts.backward(sim_node, z)
 
-                # TODO: distribution of visit counts in MCT along all arcs emanating from root
-                D = None
+                D = mcts.get_root_distribution()
 
                 # TODO: Add case (root, D) to RBUF
                 rbuf.add_case((mcts.root, D))

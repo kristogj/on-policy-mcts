@@ -125,6 +125,13 @@ class MonteCarloSearchTree:
             root, value = min(children, key=operator.itemgetter(1))
         return root
 
+    def get_root_distribution(self):
+        """
+        From the self.root node calculate the distribution D
+        :return: tensor[float] - probability distribution over all possible actions
+        """
+        return self.state_manager.get_node_distribution(self.root)
+
     def tree_print(self):
         nodes = [self.root]
         while nodes:
