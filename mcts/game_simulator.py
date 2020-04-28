@@ -109,7 +109,7 @@ class GameSimulator:
 
             # Save ANET
             if episode % save_interval == 0 or episode == 1:
-                path = "/pretrained/ANET_E{}.pth".format(episode)
+                path = "./pretrained/ANET_E{}.pth".format(episode)
                 logging.info("Saving model to file {}".format(path))
                 torch.save(actor.anet.state_dict(), path)
 
