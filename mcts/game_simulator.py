@@ -67,7 +67,7 @@ class GameSimulator:
 
             # Initialize the MonteCarloSearchTree to a single node with the initialized game state
             state, player = game.get_current_state(), self.get_start_player()
-            mcts = MonteCarloSearchTree(self.game_config, c=self.mcts_config["c"])
+            mcts = MonteCarloSearchTree(actor, self.game_config, c=self.mcts_config["c"])
             mcts.set_root(Node(state, None, player=player))
 
             # While the actual game is not finished

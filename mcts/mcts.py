@@ -7,8 +7,9 @@ from numpy import log, sqrt
 
 class MonteCarloSearchTree:
 
-    def __init__(self, game_config, c=1):
+    def __init__(self, actor, game_config, c=1):
         self.state_manager = StateManager(game_config)
+        self.actor = actor
         self.root = None
         self.c = c  # Exploration constant
 
@@ -85,10 +86,15 @@ class MonteCarloSearchTree:
         children = self.state_manager.get_child_nodes(current_node.player, current_node.state)
         player = node.player
         while len(children) != 0:
-            # Use the default policy (random) to select a child
-            current_node = random.choice(children)
-            player = get_next_player(player)
-            children = self.state_manager.get_child_nodes(player, current_node.state)
+            # TODO: Make this more efficient
+            new_state = self.actor.default_policy(player, current_node.state)
+            # Find the child node with the same new state
+            for child in children:
+                if child.state == new_state:
+                    current_node = child
+                    player = get_next_player(player)
+                    children = self.state_manager.get_child_nodes(player, current_node.state)
+
         winner = get_next_player(player)  # Winner was actually the prev player who made a move
         return int(winner == 1)
 

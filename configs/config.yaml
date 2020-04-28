@@ -11,7 +11,7 @@ game_config:
 
 mcts_config:
   # Number of episodes (actual games played) in MCTS
-  episodes: 200
+  episodes: 10
 
   # Number of simulations done in MCTS before every actual action in the game
   num_sim: 500
@@ -27,10 +27,10 @@ anet_config:
   lr_actor: 0.01
 
   # Layer specs
-  actor_layer_specs: [15, 64, 1]
+  actor_layer_specs: [10, 64, 9]
 
   # Activation function for each layer e.g linear, sigmoid, tanh, relu
-  actor_layer_func: ["relu", "relu"]
+  actor_layer_func: ["tanh", "linear"]
 
   # Optimizer used for training actor e.g adagrad, sgd, rmsprop, adam
   actor_optim: "adam"

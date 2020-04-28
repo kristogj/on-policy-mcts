@@ -34,9 +34,14 @@ class ANET(nn.Module):
         if len(self.layer_specs) - 1 != len(self.layer_functions):
             raise AttributeError("Illegal specs for ANET")
 
+        # Use the given layer specs to initialize the model
         self.model = self.init_model()
 
     def init_model(self):
+        """
+        Take the layer specs given, and initialize a Sequential object that represent the model
+        :return: nn.Sequential
+        """
         model = nn.Sequential()
         for x in range(1, len(self.layer_specs)):
             layer = nn.Linear(in_features=self.layer_specs[x - 1], out_features=self.layer_specs[x])
@@ -44,8 +49,15 @@ class ANET(nn.Module):
             if self.layer_functions[x - 1] != "linear":
                 function = get_function(self.layer_functions[x - 1])
                 model.add_module("A{}".format(x), function)
+
+        # Initialize weights and biases in the network
         model.apply(init_weights)
         return model
 
     def forward(self, game_state):
+        """
+        Take the given state and forward it through the network. Return the output of the network
+        :param game_state:
+        :return:
+        """
         return self.model(game_state)

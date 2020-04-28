@@ -4,7 +4,7 @@ class HexAction:
         """
         Simple class to represent an action in the game
         :param player: int
-        :param cell: Cell
+        :param coord: tuple
         """
         self.player = player
         self.coord = coord
