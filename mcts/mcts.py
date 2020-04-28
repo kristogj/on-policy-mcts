@@ -82,18 +82,13 @@ class MonteCarloSearchTree:
         default policy from the leaf node’s state to a final state.
         :return: int - The player who won the simulated game
         """
-        current_node = node
-        children = self.state_manager.get_child_nodes(current_node.player, current_node.state)
-        player = node.player
+        current_state, player = node.state, node.player
+        children = self.state_manager.get_child_nodes(player, current_state)
         while len(children) != 0:
-            # TODO: Make this more efficient
-            new_state = self.actor.default_policy(player, current_node.state)
-            # Find the child node with the same new state
-            for child in children:
-                if child.state == new_state:
-                    current_node = child
-                    player = get_next_player(player)
-                    children = self.state_manager.get_child_nodes(player, current_node.state)
+            # Get next state using the default policy
+            current_state = self.actor.default_policy(player, current_state)
+            player = get_next_player(player)
+            children = self.state_manager.get_child_nodes(player, current_state)
 
         winner = get_next_player(player)  # Winner was actually the prev player who made a move
         return int(winner == 1)
