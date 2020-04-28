@@ -30,6 +30,7 @@ class GameSimulator:
         self.num_sim = self.mcts_config["num_sim"]
 
         self.save_interval = self.topp_config["M"]
+        self.batch_size = self.anet_config["batch_size"]
 
         logging.info("Initializing GameSimulator - {}".format(self.game_config["game_type"]))
 
@@ -102,16 +103,20 @@ class GameSimulator:
                 mcts.set_root(new_root)
 
             # End of episode
-            # Train ANET on a random mini-batch of cases from RBUF
+            # Train ANET on a random mini-batch of cases from ReplayBuffer
+            mini_batch = rbuf.get_batch(self.batch_size)
+            actor.train(mini_batch)
 
             # Save ANET
             if episode % save_interval == 0 or episode == 1:
-                torch.save(actor.anet.state_dict(), "./pretrained/ANET_E{}.pth".format(episode))
+                path = "/pretrained/ANET_E{}.pth".format(episode)
+                logging.info("Saving model to file {}".format(path))
+                torch.save(actor.anet.state_dict(), path)
 
             # If next player is 2 and we are in a win state, player 1 got us in a win state
             if player == 2:
                 wins += 1
 
-        # Report statistics
+        actor.visualize_loss()
         logging.info(
             "Player1 wins {} of {} games ({}%)".format(wins, self.episodes, round(100 * (wins / self.episodes))))

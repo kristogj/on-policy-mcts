@@ -1,5 +1,6 @@
 from models import ANET
 import logging
+import matplotlib.pyplot as plt
 
 import torch
 import torch.nn.functional as F
@@ -28,6 +29,8 @@ class Actor:
     def __init__(self, config):
         self.anet = ANET(config)
         self.optimizer = self.optimizer = get_optimizer(self.anet.model, config["actor_optim"], config["lr_actor"])
+
+        self.losses = []
 
     def get_raw_distribution(self, player, state):
         """
@@ -70,3 +73,40 @@ class Actor:
         new_state[action_index.item()] = player
 
         return new_state
+
+    def train(self, batch):
+        """
+        Trained ANET in a supervised way where you pass the game_state (player+state) through the network, and use the
+        distribution D as target
+        :param batch:
+        :return:
+        """
+        X = torch.as_tensor([[node.player] + node.state for node, _ in batch], dtype=torch.float)
+        target = torch.as_tensor([torch.argmax(D).item() for _, D in batch], dtype=torch.long)
+
+        # Zero the parameter gradients from in ANET
+        self.optimizer.zero_grad()
+
+        # Forward input through model
+        out = self.anet(X)  # TODO: Should softmax be applied here?
+        out = F.softmax(out, dim=1)
+
+        # Calculate loss
+        loss = F.cross_entropy(out, target)
+
+        # Calculate gradients, and update weights
+        loss.backward()
+        self.optimizer.step()
+
+        # Save for later graphing
+        self.losses.append(loss.item())
+        logging.info("Loss: {}".format(loss.item()))
+
+    def visualize_loss(self):
+        episodes = list(range(1, len(self.losses) + 1))
+        plt.title("Loss over episodes for ANET")
+        plt.xlabel("Episodes")
+        plt.ylabel("Cross Entropy Loss")
+        plt.plot(episodes, self.losses)
+        plt.savefig("./graphs/loss.png")
+        plt.show()

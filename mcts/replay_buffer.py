@@ -12,6 +12,8 @@ class ReplayBuffer:
         :param batch_size: int
         :return: list[tuple(Node, FloatTensor)]
         """
+        if batch_size > len(self.buffer):
+            return self.buffer
         return random.sample(self.buffer, batch_size)
 
     def add_case(self, case):

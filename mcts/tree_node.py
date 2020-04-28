@@ -45,4 +45,4 @@ class Node:
         return "State: {} Action: {} Value: {} Total: {}".format(self.state, self.action, self.value, self.total)
 
     def __repr__(self):
-        return "{}, {}".format(self.state, self.action)
+        return "State: {} Action: {} Value: {} Total: {}".format(self.state, self.action, self.value, self.total)
