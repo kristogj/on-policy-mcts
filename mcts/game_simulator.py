@@ -86,7 +86,7 @@ class GameSimulator:
 
                 D = mcts.get_root_distribution()
 
-                # TODO: Add case (root, D) to RBUF
+                # Add (root, D) to Replay Buffer. This will later be used as training data for the actors policy
                 rbuf.add_case((mcts.root, D))
 
                 # TODO: Now use the search tree to choose next action

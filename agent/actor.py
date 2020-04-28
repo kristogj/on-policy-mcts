@@ -62,6 +62,7 @@ class Actor:
         all = torch.sum(D)
         D /= all
 
+        # TODO: Could also depend on a value epsilon that decreases. Instead of sampling could then do random or max
         # In the default policy we just sample
         action_index = Categorical(D).sample()
 

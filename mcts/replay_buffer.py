@@ -10,14 +10,14 @@ class ReplayBuffer:
         """
         Return a random mini-batch from the buffer
         :param batch_size: int
-        :return: list[tup]
+        :return: list[tuple(Node, FloatTensor)]
         """
         return random.sample(self.buffer, batch_size)
 
     def add_case(self, case):
         """
         Append the new case to the buffer
-        :param case: tup - A tuple (root, D)
+        :param case: tuple(Node, FloatTensor)
         :return: None
         """
         self.buffer.append(case)

@@ -117,7 +117,7 @@ class MonteCarloSearchTree:
         :return: Node
         """
         children = [(child, child.value) for child in self.root.children]
-        # TODO: Select actual action based on D
+        # TODO: Should this stay, or be changed out with something dependent of D?
         # Tree Policy = Maximise for P1 and minimize for P2
         if player == 1:
             root, value = max(children, key=operator.itemgetter(1))
