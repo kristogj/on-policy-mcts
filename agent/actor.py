@@ -1,10 +1,10 @@
 from models import ANET
 import logging
 import matplotlib.pyplot as plt
-import math
-from action import HexAction
 
 import torch
+import torch.nn as nn
+from torch.optim.optimizer import Optimizer
 import torch.nn.functional as F
 from torch.optim.adagrad import Adagrad
 from torch.optim.rmsprop import RMSprop
@@ -13,7 +13,14 @@ from torch.optim.sgd import SGD
 from torch.distributions.categorical import Categorical
 
 
-def get_optimizer(model, optim, lr):
+def get_optimizer(model: nn.Module, optim: str, lr: float) -> Optimizer:
+    """
+    Return the optimizer that corresponds to string optim. Add the parameters from model and set learning rate to lr
+    :param model: model to get the parameters from
+    :param optim: name of the optimizer
+    :param lr: learning rate to use in the optimizer
+    :return:
+    """
     if optim == "adagrad":
         return Adagrad(model.parameters(), lr=lr)
     elif optim == "sgd":
@@ -28,7 +35,7 @@ def get_optimizer(model, optim, lr):
 
 class Actor:
 
-    def __init__(self, config, load_actor=False):
+    def __init__(self, config: dict, load_actor: bool = False):
         if load_actor:
             self.name = None
             self.anet = None
@@ -39,13 +46,22 @@ class Actor:
 
         self.losses = []
 
-    def load_anet(self, name, anet):
+    def load_anet(self, name: str, anet: ANET):
+        """
+        Load pre-trained ANET into the Actor
+        :param name: filename of the pre-trained network
+        :param anet: pre-trained model
+        :return: None
+        """
         self.name = name.split("/")[-1]
         self.anet = anet
 
-    def get_conditional_distribution(self, player, state):
+    def get_conditional_distribution(self, player: int, state: any) -> torch.Tensor:
         """
         Forward the game_state through ANET and return the conditional softmax of the output
+        :param player: players turn
+        :param state: state of the game being played
+        :return: a probability distribution of all legal actions
         """
         # First element of the list represent which player turn it is
         tensor_state = torch.as_tensor([player] + state, dtype=torch.float)
@@ -67,35 +83,35 @@ class Actor:
 
         return D
 
-    def default_policy(self, player, state):
+    def default_policy(self, player: int, state: any) -> int:
         """
         Forward the state through the network, and return the new state
-        :param player: int
-        :param state: list[int]
-        :return:
+        :param player: players turn
+        :param state: state of the game being played
+        :return: index of action selected from the distribution D
         """
         D = self.get_conditional_distribution(player, state)
         # TODO: Could also depend on a value epsilon that decreases. Instead of sampling could then do random or max
-        action_index = Categorical(D).sample()
+        action_index = Categorical(D).sample().item()
         return action_index
 
-    def topp_policy(self, player, state):
+    def topp_policy(self, player: int, state: any) -> int:
         """
         Return the index of action in distribution
-        :param player: int
-        :param state: list[int]
-        :return:
+        :param player: players turn
+        :param state: state of the game being played
+        :return: index of action selected from the distribution D
         """
         D = self.get_conditional_distribution(player, state)
-        action_index = torch.argmax(D)
+        action_index = torch.argmax(D).item()
         return action_index
 
-    def train(self, batch):
+    def train(self, batch: list) -> None:
         """
         Trained ANET in a supervised way where you pass the game_state (player+state) through the network, and use the
         distribution D as target
-        :param batch:
-        :return:
+        :param batch: a list of (node, D) tuples from selected from the ReplayBuffer
+        :return: None
         """
         X = torch.as_tensor([[node.player] + node.state for node, _ in batch], dtype=torch.float)
         target = torch.as_tensor([torch.argmax(D).item() for _, D in batch], dtype=torch.long)
@@ -118,7 +134,11 @@ class Actor:
         self.losses.append(loss.item())
         logging.info("Loss: {}".format(loss.item()))
 
-    def visualize_loss(self):
+    def visualize_loss(self) -> None:
+        """
+        Visualize the losses saved during training in a plot over episodes
+        :return: None
+        """
         episodes = list(range(1, len(self.losses) + 1))
         plt.title("Loss over episodes for ANET")
         plt.xlabel("Episodes")

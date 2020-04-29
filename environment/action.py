@@ -1,6 +1,6 @@
 class HexAction:
 
-    def __init__(self, player, coord):
+    def __init__(self, player: int, coord: tuple):
         """
         Simple class to represent an action in the game
         :param player: int
@@ -9,10 +9,18 @@ class HexAction:
         self.player = player
         self.coord = coord
 
-    def get_player(self):
+    def get_player(self) -> int:
+        """
+        Return the player making the action
+        :return: the player id
+        """
         return self.player
 
-    def get_coord(self):
+    def get_coord(self) -> tuple:
+        """
+        Return the coordinate for the action
+        :return: coordinate for the action
+        """
         return self.coord
 
     def __str__(self):

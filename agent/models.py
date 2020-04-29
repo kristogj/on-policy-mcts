@@ -1,12 +1,13 @@
+import torch
 import torch.nn as nn
 import logging
 
 
-def get_function(func):
+def get_function(func: str) -> nn.Module:
     """
     Return the activation function specified
-    :param func: str
-    :return:
+    :param func: name of activation function to return
+    :return: the activation function
     """
     if func == "relu":
         return nn.ReLU(inplace=True)
@@ -18,14 +19,19 @@ def get_function(func):
         raise ValueError("Invalid activation function")
 
 
-def init_weights(m):
+def init_weights(m: nn.Module) -> None:
+    """
+    Initialize the weights of the module
+    :param m: a module with parameters that could be initialized
+    :return: None
+    """
     if type(m) == nn.Linear:
         nn.init.xavier_uniform_(m.weight)
 
 
 class ANET(nn.Module):
 
-    def __init__(self, config):
+    def __init__(self, config: dict) -> None:
         super(ANET, self).__init__()
         logging.info("Initializing ANET - {}".format(config))
         self.layer_specs = config["actor_layer_specs"]
@@ -37,10 +43,10 @@ class ANET(nn.Module):
         # Use the given layer specs to initialize the model
         self.model = self.init_model()
 
-    def init_model(self):
+    def init_model(self) -> nn.Sequential:
         """
         Take the layer specs given, and initialize a Sequential object that represent the model
-        :return: nn.Sequential
+        :return: the initialized model
         """
         model = nn.Sequential()
         for x in range(1, len(self.layer_specs)):
@@ -54,10 +60,10 @@ class ANET(nn.Module):
         model.apply(init_weights)
         return model
 
-    def forward(self, game_state):
+    def forward(self, game_state: torch.Tensor) -> torch.Tensor:
         """
         Take the given state and forward it through the network. Return the output of the network
-        :param game_state:
-        :return:
+        :param game_state: input to the model
+        :return: output from the model
         """
         return self.model(game_state)

@@ -1,6 +1,6 @@
 class Cell:
 
-    def __init__(self, row, column, player):
+    def __init__(self, row: int, column: int, player: int):
         self.row, self.column = row, column  # Location on board
         self.coord = (row, column)
         self.neighbours = {}  # Neighbour cells on board
