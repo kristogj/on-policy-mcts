@@ -4,7 +4,7 @@ game_config:
 
   hex:
     # Size of Hex board where 3 <= size <= 10
-    board_size: 4
+    board_size: 3
 
   # Turn on/off game statistic/prints during games
   verbose: 0
@@ -22,12 +22,18 @@ mcts_config:
   # Which player should start
   starting_player: 1
 
+  # Epsilon for epsilon-greedy strategy with decay rate if changing
+  epsilon: 1
+
+  # Decay rate epsilon
+  dr_epsilon: 0.97
+
 anet_config:
   # Learning rate for the neural net used by the actor
-  lr_actor: 0.01
+  lr_actor: 0.005
 
   # Layer specs
-  actor_layer_specs: [17, 64, 16]
+  actor_layer_specs: [10, 64, 9]
 
   # Activation function for each layer e.g linear, sigmoid, tanh, relu
   actor_layer_func: ["tanh", "linear"]

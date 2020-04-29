@@ -98,16 +98,19 @@ class Actor:
                 legal_indexes.append(i)
         return random.choice(legal_indexes)
 
-    def default_policy(self, player: int, state: any) -> int:
+    def default_policy(self, player: int, state: any, epsilon: float) -> int:
         """
         Forward the state through the network, and return the index of action in distribution
         :param player: players turn
         :param state: state of the game being played
+        :param epsilon: probability of doing a random move
         :return: index of action selected from the distribution D
         """
-        D = self.get_conditional_distribution(player, state)
-        # TODO: Could also depend on a value epsilon that decreases. Instead of sampling could then do random or max
-        action_index = Categorical(D).sample().item()
+        if random.random() < epsilon:
+            action_index = self.random_policy(state)
+        else:
+            D = self.get_conditional_distribution(player, state)
+            action_index = torch.argmax(D).item()
         return action_index
 
     def topp_policy(self, player: int, state: any) -> int:
@@ -118,7 +121,7 @@ class Actor:
         :return: index of action selected from the distribution D
         """
         D = self.get_conditional_distribution(player, state)
-        action_index = torch.argmax(D).item()
+        action_index = Categorical(D).sample().item()
         return action_index
 
     def train(self, batch: list) -> None:

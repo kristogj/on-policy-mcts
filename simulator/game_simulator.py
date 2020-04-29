@@ -30,6 +30,8 @@ class GameSimulator:
         self.starting_player = self.mcts_config["starting_player"]
         self.episodes = self.mcts_config["episodes"]
         self.num_sim = self.mcts_config["num_sim"]
+        self.epsilon = self.mcts_config["epsilon"]
+        self.dr_epsilon = self.mcts_config["dr_epsilon"]
 
         self.save_interval = self.topp_config["M"]
         self.batch_size = self.anet_config["batch_size"]
@@ -81,7 +83,7 @@ class GameSimulator:
                     # One iteration of Monte Carlo Tree Search consists of four steps
                     leaf = mcts.selection()
                     sim_node = mcts.expansion(leaf)
-                    z = mcts.simulation(sim_node)
+                    z = mcts.simulation(sim_node, epsilon=self.epsilon)
                     mcts.backward(sim_node, z)
 
                 # Get the probability distribution over actions from current root/state.
@@ -101,6 +103,9 @@ class GameSimulator:
 
                 # Set new root of MCST
                 mcts.set_root(new_root)
+
+                # Update epsilon for next round of simulations
+                self.epsilon *= self.dr_epsilon
 
             # End of episode
             # Train ANET on a random mini-batch of cases from ReplayBuffer

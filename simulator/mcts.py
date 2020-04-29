@@ -12,7 +12,6 @@ class MonteCarloSearchTree:
         self.actor = actor
         self.root = None
         self.c = c  # Exploration constant
-
         self.state_manager.init_new_game()
 
     def set_root(self, node):
@@ -76,7 +75,7 @@ class MonteCarloSearchTree:
         # Tree is now expanded, return the leaf, and simulate to game over
         return leaf
 
-    def simulation(self, node):
+    def simulation(self, node, epsilon):
         """
         Leaf Evaluation - Estimating the value of a leaf node in the tree by doing a roll-out simulation using the
         default policy from the leaf node’s state to a final state.
@@ -85,7 +84,7 @@ class MonteCarloSearchTree:
         current_state, player = node.state, node.player
         while not self.state_manager.verify_winning_state(current_state):
             # Get next action using the default policy
-            action_index = self.actor.default_policy(player, current_state)
+            action_index = self.actor.default_policy(player, current_state, epsilon=epsilon)
             current_state = self.state_manager.get_next_state(player, current_state, action_index)
             player = get_next_player(player)
 
