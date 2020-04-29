@@ -1,7 +1,6 @@
 import logging
 import yaml
 from game import Hex
-import torch
 
 
 def init_logger():
@@ -40,7 +39,3 @@ def get_new_game(game_config):
     else:
         raise ValueError("Game type is not supported")
     return game
-
-
-def save_model(model, path):
-    torch.save(model.state_dict(), path)

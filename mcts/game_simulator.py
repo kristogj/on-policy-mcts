@@ -2,10 +2,11 @@ import logging
 from mcts import MonteCarloSearchTree
 from tree_node import Node
 import random
-from utils import get_next_player, get_new_game, save_model
+from utils import get_next_player
 from actor import Actor
 import torch
 from replay_buffer import ReplayBuffer
+from state_manager import StateManager
 
 
 class GameSimulator:
@@ -48,23 +49,24 @@ class GameSimulator:
         """
         Run G consecutive games (aka. episodes) of the self.game_type using fixed values for the game parameters
         """
-        # SAve interval for ANET (the actor network) parameters
-
+        # Save interval for ANET (the actor network) parameters
         save_interval = int(self.episodes / (self.save_interval - 1))
 
-        # TODO: Clear Replay Buffer (RBUF)
         rbuf = ReplayBuffer()
 
-        # Initialize ANET
+        # Initialize Actor which have ANET
         actor = Actor(self.anet_config)
-        wins = 0  # Number of times player 1 wins
 
+        # Init a StateManager that takes care of the actual game
+        game = StateManager(self.game_config)
+
+        wins = 0  # Number of times player 1 wins
         # Actual games being played
         for episode in range(1, self.episodes + 1):
             logging.info("Episode: {}".format(episode))
 
             # Initialize the actual game
-            game = get_new_game(self.game_config)
+            game.init_new_game()
 
             # Initialize the MonteCarloSearchTree to a single node with the initialized game state
             state, player = game.get_current_state(), self.get_start_player()
@@ -76,25 +78,22 @@ class GameSimulator:
                 # Every time we shall select a new action, we perform M number of simulations in MCTS
                 for _ in range(self.num_sim):
                     # One iteration of Monte Carlo Tree Search consists of four steps
-                    # 1. Selection
                     leaf = mcts.selection()
-                    # 2. Expand selected leaf node
                     sim_node = mcts.expansion(leaf)
-                    # 3. Simulation
                     z = mcts.simulation(sim_node)
-                    # 4. Backward propagation
                     mcts.backward(sim_node, z)
 
+                # Get the probability distribution over actions from current root/state.
                 D = mcts.get_root_distribution()
 
                 # Add (root, D) to Replay Buffer. This will later be used as training data for the actors policy
                 rbuf.add_case((mcts.root, D))
 
-                # TODO: Now use the search tree to choose next action
+                # Select actual move based on D
                 new_root = mcts.select_actual_action(D, player)
 
                 # Perform this action, moving the game from state s -> s´
-                game.perform_action(new_root.action)
+                game.perform_actual_action(new_root.action)
 
                 # Update player
                 player = get_next_player(player)

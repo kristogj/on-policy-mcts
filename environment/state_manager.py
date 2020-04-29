@@ -2,6 +2,7 @@ from utils import get_new_game
 from tree_node import Node
 import torch
 
+
 class StateManager:
 
     def __init__(self, game_config):
@@ -27,13 +28,35 @@ class StateManager:
         new_states = [self.game.get_next_state(state, action) for action in legal_actions]
         return [Node(state, action) for state, action in zip(new_states, legal_actions)]
 
-    def is_winning_state(self, state):
+    def verify_winning_state(self, state):
         """
         Check if given state is a winning state
         :param state: Type depends on the game
         :return: boolean
         """
         return self.game.verify_winning_state(state)
+
+    def is_winning_state(self):
+        """
+        Check if the actual game being played is in a winning state
+        :return: boolean
+        """
+        return self.game.is_winning_state()
+
+    def perform_actual_action(self, action):
+        """
+        Perform the given action in the actual game
+        :param action: Action
+        :return: None
+        """
+        self.game.perform_action(action)
+
+    def get_current_state(self):
+        """
+        Return the current state of the game
+        :return:
+        """
+        return self.game.get_current_state()
 
     def get_node_distribution(self, root):
         """
