@@ -1,6 +1,8 @@
 from models import ANET
 import logging
 import matplotlib.pyplot as plt
+import math
+from action import HexAction
 
 import torch
 import torch.nn.functional as F
@@ -55,7 +57,7 @@ class Actor:
         # Calculate exp before re-normalizing softmax
         D = torch.exp(D)
 
-        # Set positions that are already taken to zero
+        # Set positions that are already taken to zero - TODO: This is depended on what game is being played
         mask = torch.as_tensor([int(player == 0) for player in state], dtype=torch.int)
         D *= mask
 
@@ -73,16 +75,9 @@ class Actor:
         :return:
         """
         D = self.get_conditional_distribution(player, state)
-
         # TODO: Could also depend on a value epsilon that decreases. Instead of sampling could then do random or max
-        # In the default policy we just sample
         action_index = Categorical(D).sample()
-
-        # TODO: Could be moved to StateManager...
-        new_state = state.copy()
-        new_state[action_index.item()] = player
-
-        return new_state
+        return action_index
 
     def topp_policy(self, player, state):
         """
@@ -93,10 +88,7 @@ class Actor:
         """
         D = self.get_conditional_distribution(player, state)
         action_index = torch.argmax(D)
-        # TODO: Could be moved to StateManager...
-        new_state = state.copy()
-        new_state[action_index.item()] = player
-        return new_state
+        return action_index
 
     def train(self, batch):
         """
@@ -112,7 +104,7 @@ class Actor:
         self.optimizer.zero_grad()
 
         # Forward input through model
-        out = self.anet(X)  # TODO: Should softmax be applied here?
+        out = self.anet(X)
         out = F.softmax(out, dim=1)
 
         # Calculate loss

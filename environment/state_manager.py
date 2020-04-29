@@ -1,6 +1,20 @@
 from utils import get_new_game
 from tree_node import Node
 import torch
+import math
+from action import HexAction
+
+
+def index_to_coordinate(index, size):
+    """
+    Convert an index from a flat array to a coordinate in a size x size matrix
+    :param index: int
+    :param size: int
+    :return:
+    """
+    row = math.floor(index / size)
+    col = index % size
+    return row, col
 
 
 class StateManager:
@@ -57,6 +71,34 @@ class StateManager:
         :return:
         """
         return self.game.get_current_state()
+
+    def get_action(self, player, action_index):
+        """
+        Convert the action index selected from the output of the Actor Network.
+        :param player: int
+        :param action_index: int
+        :return: Action
+        """
+        game_type = self.game_config["game_type"]
+        if game_type == "hex":
+            size = self.game_config["hex"]["board_size"]
+            action_coord = index_to_coordinate(action_index, size)
+            action = HexAction(player, action_coord)
+        else:
+            raise ValueError("Action Index to Action object is not supported for this game.")
+        return action
+
+    def get_next_state(self, player, current_state, action_index):
+        """
+        Get the next state of the game by using the action index selected from the output of the Actor Network.
+        :param player: int - players turn
+        :param current_state: current state of the game being played
+        :param action_index: int - index of selected action from a Distribution D
+        :return: state of the game after action is performed
+        """
+        action = self.get_action(player, action_index)
+        new_state = self.game.get_next_state(current_state, action)
+        return new_state
 
     def get_node_distribution(self, root):
         """

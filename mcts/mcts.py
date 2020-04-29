@@ -86,7 +86,8 @@ class MonteCarloSearchTree:
         children = self.state_manager.get_child_nodes(player, current_state)
         while len(children) != 0:
             # Get next state using the default policy
-            current_state = self.actor.default_policy(player, current_state)
+            action_index = self.actor.default_policy(player, current_state)
+            current_state = self.state_manager.get_next_state(player, current_state, action_index)
             player = get_next_player(player)
             children = self.state_manager.get_child_nodes(player, current_state)
 

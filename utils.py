@@ -1,6 +1,9 @@
 import logging
 import yaml
 from game import Hex
+from actor import Actor
+from models import ANET
+import torch
 
 
 def init_logger():
@@ -21,6 +24,15 @@ def load_config(path):
     Load the configuration from task_2_table.yaml.
     """
     return yaml.load(open(path, 'r'), Loader=yaml.SafeLoader)
+
+
+def load_model(file_path):
+    config = load_config("../configs/config.yaml")
+    actor = Actor(None, load_actor=True)
+    model = ANET(config["anet_config"])
+    model.load_state_dict(torch.load(file_path))
+    model.eval()
+    return actor
 
 
 def get_next_player(player):

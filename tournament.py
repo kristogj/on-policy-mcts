@@ -6,6 +6,7 @@ from state_manager import StateManager
 import random
 from actor import Actor
 from utils import get_next_player
+import re
 
 
 class TournamentOfProgressivePolicies:
@@ -24,6 +25,7 @@ class TournamentOfProgressivePolicies:
         """
         logging.info("Loading models for Tournament...")
         file_paths = glob.glob(self.load_path + "/*.pth")
+        file_paths.sort(key=lambda name: int(re.findall(r'\d+', name)[0]))
         agents = []
         for file_path in file_paths:
             actor = Actor(None, load_actor=True)
@@ -44,9 +46,11 @@ class TournamentOfProgressivePolicies:
         actors = {1: p1, 2: p2}
         self.state_manager.init_new_game()
         player = random.randint(1, 2)  # Choose random player to start
-        current_state = self.state_manager.get_current_state()
-        while not self.state_manager.verify_winning_state(current_state):
-            current_state = actors[player].topp_policy(player, current_state)
+        while not self.state_manager.is_winning_state():
+            current_state = self.state_manager.get_current_state()
+            action_index = actors[player].topp_policy(player, current_state)
+            action = self.state_manager.get_action(player, action_index)
+            self.state_manager.perform_actual_action(action)
             player = get_next_player(player)
 
         winner = get_next_player(player)

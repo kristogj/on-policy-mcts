@@ -1,11 +1,14 @@
 import math
 from oht.BasicClientActorAbs import BasicClientActorAbs
+from utils import load_model
+
 
 class BasicClientActor(BasicClientActorAbs):
 
     def __init__(self, IP_address=None, verbose=True):
         self.series_id = -1
         BasicClientActorAbs.__init__(self, IP_address, verbose=verbose)
+        self.actor = load_model("ANET_E200.pth")
 
     def handle_get_action(self, state):
         """
@@ -20,7 +23,7 @@ class BasicClientActor(BasicClientActorAbs):
 
         # This is an example player who picks random moves. REMOVE THIS WHEN YOU ADD YOUR OWN CODE !!
         next_move = tuple(self.pick_random_free_cell(
-            state, size=int(math.sqrt(len(state)-1))))
+            state, size=int(math.sqrt(len(state) - 1))))
         #############################
         #
         #

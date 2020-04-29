@@ -11,7 +11,7 @@ game_config:
 
 mcts_config:
   # Number of episodes (actual games played) in MCTS
-  episodes: 10
+  episodes: 200
 
   # Number of simulations done in MCTS before every actual action in the game
   num_sim: 500
