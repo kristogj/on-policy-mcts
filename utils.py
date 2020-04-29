@@ -28,11 +28,12 @@ def load_config(path):
 
 
 def load_model(file_path):
-    config = load_config("../configs/config.yaml")
+    config = load_config("./configs/config.yaml")
     actor = Actor(None, load_actor=True)
     model = ANET(config["anet_config"])
     model.load_state_dict(torch.load(file_path))
     model.eval()
+    actor.load_anet(file_path, model)
     return actor
 
 

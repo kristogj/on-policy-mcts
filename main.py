@@ -12,3 +12,6 @@ if __name__ == '__main__':
     # Play TOPP
     # topp = TournamentOfProgressivePolicies(config["topp_config"], config["anet_config"], config["game_config"])
     # topp.start()
+
+    bsa = BasicClientActor(verbose=True)
+    bsa.connect_to_server()

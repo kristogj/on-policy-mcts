@@ -1,6 +1,7 @@
 import math
 from oht.BasicClientActorAbs import BasicClientActorAbs
 from utils import load_model
+from environment.state_manager import index_to_coordinate
 
 
 class BasicClientActor(BasicClientActorAbs):
@@ -8,7 +9,7 @@ class BasicClientActor(BasicClientActorAbs):
     def __init__(self, IP_address=None, verbose=True):
         self.series_id = -1
         BasicClientActorAbs.__init__(self, IP_address, verbose=verbose)
-        self.actor = load_model("ANET_E200.pth")
+        self.actor = load_model("./oht/ANET_E200.pth")
 
     def handle_get_action(self, state):
         """
@@ -22,16 +23,11 @@ class BasicClientActor(BasicClientActorAbs):
         """
 
         # This is an example player who picks random moves. REMOVE THIS WHEN YOU ADD YOUR OWN CODE !!
-        next_move = tuple(self.pick_random_free_cell(
-            state, size=int(math.sqrt(len(state) - 1))))
-        print(next_move)
-        #############################
-        #
-        #
-        # YOUR CODE HERE
-        #
-        # next_move = ???
-        ##############################
+        # next_move = tuple(self.pick_random_free_cell(state, size=int(math.sqrt(len(state) - 1))))
+        player = state[0]
+        state = list(state[1:])
+        action_index = self.actor.topp_policy(player, state)
+        next_move = index_to_coordinate(action_index, int(math.sqrt(len(state))))
         return next_move
 
     def handle_series_start(self, unique_id, series_id, player_map, num_games, game_params):
@@ -136,9 +132,3 @@ class BasicClientActor(BasicClientActorAbs):
         print("An illegal action was attempted:")
         print('State: ' + str(state))
         print('Action: ' + str(illegal_action))
-
-
-if __name__ == '__main__':
-    #bsa = BasicClientActor(verbose=True)
-    #bsa.connect_to_server()
-    pass

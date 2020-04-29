@@ -19,7 +19,7 @@ class BasicClientActorAbs(ABC):
         # We require a certificate from the server. We used a self-signed certificate
         # so here ca_certs must be the server certificate itself.
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        context.load_verify_locations("server.crt")
+        context.load_verify_locations("./oht/server.crt")
         context.verify_mode = ssl.CERT_REQUIRED
         context.check_hostname = False # We have no hostname for the server
         self.ssl_sock = context.wrap_socket(self.s)
@@ -110,6 +110,7 @@ class BasicClientActorAbs(ABC):
 
             # Unrecognized server response
             else:
+                print(msg)
                 print('Unrecognized response from server, disconnecting now.')
                 self.disconnect_from_server()
 
