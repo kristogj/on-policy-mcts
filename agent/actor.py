@@ -26,23 +26,43 @@ def get_optimizer(model, optim, lr):
 
 class Actor:
 
-    def __init__(self, config):
-        self.anet = ANET(config)
-        self.optimizer = self.optimizer = get_optimizer(self.anet.model, config["actor_optim"], config["lr_actor"])
+    def __init__(self, config, load_actor=False):
+        if load_actor:
+            self.name = None
+            self.anet = None
+            self.optimizer = None
+        else:
+            self.anet = ANET(config)
+            self.optimizer = self.optimizer = get_optimizer(self.anet.model, config["actor_optim"], config["lr_actor"])
 
         self.losses = []
 
-    def get_raw_distribution(self, player, state):
+    def load_anet(self, name, anet):
+        self.name = name.split("/")[-1]
+        self.anet = anet
+
+    def get_conditional_distribution(self, player, state):
         """
-        Forward the game_state through ANET and return the softmax of the output
+        Forward the game_state through ANET and return the conditional softmax of the output
         """
         # First element of the list represent which player turn it is
-        game_state = [player] + state
-        tensor_state = torch.FloatTensor(game_state).unsqueeze(0)
+        tensor_state = torch.as_tensor([player] + state, dtype=torch.float)
         # Forward through ANET
         D = self.anet(tensor_state)
         # Apply softmax to output and return un-normalized distribution over actions
-        D = F.softmax(D, dim=1)
+        D = F.softmax(D, dim=0)
+
+        # Calculate exp before re-normalizing softmax
+        D = torch.exp(D)
+
+        # Set positions that are already taken to zero
+        mask = torch.as_tensor([int(player == 0) for player in state], dtype=torch.int)
+        D *= mask
+
+        # Re-normalize values that are not equal to zero to sum up to 1
+        all = torch.sum(D)
+        D /= all
+
         return D
 
     def default_policy(self, player, state):
@@ -52,26 +72,30 @@ class Actor:
         :param state: list[int]
         :return:
         """
-        D = self.get_raw_distribution(player, state)
-
-        # Calculate exp before re-normalizing softmax
-        D = torch.exp(D)
-
-        # Set positions that are already taken to zero
-        mask = torch.IntTensor([int(player == 0) for player in state])
-        D[0] *= mask
-
-        # Re-normalize values that are not equal to zero to sum up to 1
-        all = torch.sum(D)
-        D /= all
+        D = self.get_conditional_distribution(player, state)
 
         # TODO: Could also depend on a value epsilon that decreases. Instead of sampling could then do random or max
         # In the default policy we just sample
         action_index = Categorical(D).sample()
 
+        # TODO: Could be moved to StateManager...
         new_state = state.copy()
         new_state[action_index.item()] = player
 
+        return new_state
+
+    def topp_policy(self, player, state):
+        """
+        Return the index of action in distribution
+        :param player: int
+        :param state: list[int]
+        :return:
+        """
+        D = self.get_conditional_distribution(player, state)
+        action_index = torch.argmax(D)
+        # TODO: Could be moved to StateManager...
+        new_state = state.copy()
+        new_state[action_index.item()] = player
         return new_state
 
     def train(self, batch):

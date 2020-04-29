@@ -4,6 +4,8 @@ from models import ANET
 import torch
 from state_manager import StateManager
 import random
+from actor import Actor
+from utils import get_next_player
 
 
 class TournamentOfProgressivePolicies:
@@ -20,20 +22,47 @@ class TournamentOfProgressivePolicies:
         Load all pre-trained actors networks into a list of agents
         :return: list[ANET]
         """
+        logging.info("Loading models for Tournament...")
         file_paths = glob.glob(self.load_path + "/*.pth")
         agents = []
         for file_path in file_paths:
+            actor = Actor(None, load_actor=True)
             model = ANET(self.anet_config)
             model.load_state_dict(torch.load(file_path))
             model.eval()
-            agents.append((file_path, model))
+            actor.load_anet(file_path, model)
+            agents.append(actor)
         return agents
 
     def play_game(self, p1, p2):
-        players = {1: p1, 2: p2}
+        """
+        Play one game and return the winner
+        :param p1: Actor - player 1
+        :param p2: Actor - player 2
+        :return: int - winner
+        """
+        actors = {1: p1, 2: p2}
         self.state_manager.init_new_game()
         player = random.randint(1, 2)  # Choose random player to start
-        while not self.state_manager.is_winning_state():
-            break
+        current_state = self.state_manager.get_current_state()
+        while not self.state_manager.verify_winning_state(current_state):
+            current_state = actors[player].topp_policy(player, current_state)
+            player = get_next_player(player)
 
-        pass
+        winner = get_next_player(player)
+        return winner
+
+    def start(self):
+        """
+        Start the tournament, and log results after each series of self.num_games is done
+        :return: None
+        """
+        for i in range(len(self.agents)):
+            for j in range(i + 1, len(self.agents)):
+                p1, p2 = self.agents[i], self.agents[j]
+                logging.info("Starting series between {} and {}".format(p1.name, p2.name))
+                wins = 0
+                for _ in range(self.num_games):
+                    winner = self.play_game(p1, p2)
+                    wins += int(winner == 1)
+                logging.info("{} wins {} of {} games against {} \n".format(p1.name, wins, self.num_games, p2.name))
