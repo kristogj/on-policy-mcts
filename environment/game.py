@@ -212,10 +212,3 @@ class Hex(Game):
         for row in self.board:
             res += str(row) + "\n"
         return res
-
-
-if __name__ == '__main__':
-    config = dict()
-    config["board_size"] = 2
-    game = Hex(config)
-    print(game.get_legal_actions(2, [0, 0, 0, 0]))

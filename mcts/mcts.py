@@ -1,7 +1,7 @@
 from state_manager import StateManager
 import operator
 from utils import get_next_player
-import random
+import logging
 from numpy import log, sqrt
 
 
@@ -83,13 +83,11 @@ class MonteCarloSearchTree:
         :return: int - The player who won the simulated game
         """
         current_state, player = node.state, node.player
-        children = self.state_manager.get_child_nodes(player, current_state)
-        while len(children) != 0:
-            # Get next state using the default policy
+        while not self.state_manager.verify_winning_state(current_state):
+            # Get next action using the default policy
             action_index = self.actor.default_policy(player, current_state)
             current_state = self.state_manager.get_next_state(player, current_state, action_index)
             player = get_next_player(player)
-            children = self.state_manager.get_child_nodes(player, current_state)
 
         winner = get_next_player(player)  # Winner was actually the prev player who made a move
         return int(winner == 1)
@@ -105,6 +103,7 @@ class MonteCarloSearchTree:
         """
         node = sim_node
         node.total += 1
+
         while node.parent:
             node.parent.total += 1
             node.value += (z - node.value) / node.total

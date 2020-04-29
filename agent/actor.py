@@ -1,6 +1,7 @@
 from models import ANET
 import logging
 import matplotlib.pyplot as plt
+import random
 
 import torch
 import torch.nn as nn
@@ -83,9 +84,22 @@ class Actor:
 
         return D
 
+    @staticmethod
+    def random_policy(state: any) -> int:
+        """
+        Return a random action in the distribution
+        :param state: current state of the game
+        :return: index of the action in the distribution
+        """
+        legal_indexes = []
+        for i, p in enumerate(state):
+            if p == 0:
+                legal_indexes.append(i)
+        return random.choice(legal_indexes)
+
     def default_policy(self, player: int, state: any) -> int:
         """
-        Forward the state through the network, and return the new state
+        Forward the state through the network, and return the index of action in distribution
         :param player: players turn
         :param state: state of the game being played
         :return: index of action selected from the distribution D

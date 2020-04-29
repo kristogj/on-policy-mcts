@@ -100,36 +100,25 @@ class StateManager:
         new_state = self.game.get_next_state(current_state, action)
         return new_state
 
-    def get_node_distribution(self, root):
+    def get_node_distribution(self, root: Node) -> torch.Tensor:
         """
-        # TODO: Should it be normalized?
-        From the node given, calculate the (normalized?)distribution D
-        :param root:
-        :return:
+        From root, calculate the distribution over possible actions.
+        :param root: node representing the current state in the game
+        :return: a probability distribution over actions
         """
         game_type = self.game_config["game_type"]
-        D = None
         if game_type == "hex":
-            # TODO: Is this correct way to calculate D for Hex?
             size = self.game_config["hex"]["board_size"]
-            D = torch.zeros((1, size, size))
+            D = torch.zeros((size, size))
             for child in root.children:
                 row, col = child.action.get_coord()
-                D[0][row][col] = child.total
-            # Flatten D
-            D = D.flatten(1)
-
-            # Normalize values to be smaller
-            D = (D - D.mean()) / D.std()
-
-            # TODO: Duplicate code, could be refactored
-            # Calculate exp before re-normalizing softmax
-            D = torch.exp(D)
-            # Set positions that are already taken to zero
-            mask = torch.IntTensor([int(player == 0) for player in root.state])
-            D[0] *= mask
-            # Re-normalize values that are not equal to zero to sum up to 1
-            all = torch.sum(D)
-            D /= all
-            D = D[0]
+                D[row][col] = child.total  # TODO: Could use value here as well?
+            D = D.flatten(0)
+            D = (D - D.mean()) / D.std()  # Normalize values to be smaller
+            D = torch.exp(D)  # Calculate exp before re-normalizing softmax
+            mask = torch.as_tensor([int(player == 0) for player in root.state], dtype=torch.int)
+            D *= mask  # Set positions that are already taken to zero
+            D /= torch.sum(D)  # Re-normalize values that are not equal to zero to sum up to 1
+        else:
+            raise ValueError("Distribution is not supported for this game type")
         return D
