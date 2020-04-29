@@ -64,5 +64,5 @@ class TournamentOfProgressivePolicies:
                 wins = 0
                 for _ in range(self.num_games):
                     winner = self.play_game(p1, p2)
-                    wins += int(winner == 1)
-                logging.info("{} wins {} of {} games against {} \n".format(p1.name, wins, self.num_games, p2.name))
+                    wins += int(winner == 2)
+                logging.info("{} wins {} of {} games against {} \n".format(p2.name, wins, self.num_games, p1.name))
