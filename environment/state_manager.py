@@ -1,8 +1,9 @@
-from utils import get_new_game
-from tree_node import Node
 import torch
 import math
-from action import HexAction
+
+from utils import get_new_game
+from simulator.tree_node import Node
+from environment.action import HexAction
 
 
 def index_to_coordinate(index, size):

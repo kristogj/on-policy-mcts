@@ -1,9 +1,10 @@
 import logging
 import yaml
-from game import Hex
-from actor import Actor
-from models import ANET
 import torch
+
+from environment.game import Hex
+from agent.actor import Actor
+from agent.models import ANET
 
 
 def init_logger():

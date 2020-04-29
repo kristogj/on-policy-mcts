@@ -24,6 +24,7 @@ class BasicClientActor(BasicClientActorAbs):
         # This is an example player who picks random moves. REMOVE THIS WHEN YOU ADD YOUR OWN CODE !!
         next_move = tuple(self.pick_random_free_cell(
             state, size=int(math.sqrt(len(state) - 1))))
+        print(next_move)
         #############################
         #
         #
@@ -138,5 +139,6 @@ class BasicClientActor(BasicClientActorAbs):
 
 
 if __name__ == '__main__':
-    bsa = BasicClientActor(verbose=True)
-    bsa.connect_to_server()
+    #bsa = BasicClientActor(verbose=True)
+    #bsa.connect_to_server()
+    pass

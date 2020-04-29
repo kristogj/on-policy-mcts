@@ -1,4 +1,3 @@
-from models import ANET
 import logging
 import matplotlib.pyplot as plt
 import random
@@ -12,6 +11,8 @@ from torch.optim.rmsprop import RMSprop
 from torch.optim.adam import Adam
 from torch.optim.sgd import SGD
 from torch.distributions.categorical import Categorical
+
+from agent.models import ANET
 
 
 def get_optimizer(model: nn.Module, optim: str, lr: float) -> Optimizer:

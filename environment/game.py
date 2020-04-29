@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
-from cell import Cell
 from collections import deque
-from action import HexAction
+
+from environment.cell import Cell
+from environment.action import HexAction
 
 
 class Game(ABC):

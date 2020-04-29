@@ -1,12 +1,13 @@
 import logging
-from mcts import MonteCarloSearchTree
-from tree_node import Node
 import random
-from utils import get_next_player
-from actor import Actor
 import torch
-from replay_buffer import ReplayBuffer
-from state_manager import StateManager
+
+from utils import get_next_player
+from agent.actor import Actor
+from simulator.tree_node import Node
+from simulator.mcts import MonteCarloSearchTree
+from simulator.replay_buffer import ReplayBuffer
+from environment.state_manager import StateManager
 
 
 class GameSimulator:

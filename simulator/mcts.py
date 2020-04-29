@@ -1,8 +1,8 @@
-from state_manager import StateManager
 import operator
-from utils import get_next_player
-import logging
 from numpy import log, sqrt
+
+from utils import get_next_player
+from environment.state_manager import StateManager
 
 
 class MonteCarloSearchTree:

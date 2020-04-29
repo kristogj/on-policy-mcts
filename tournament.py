@@ -1,12 +1,13 @@
 import logging
 import glob
-from models import ANET
 import torch
-from state_manager import StateManager
 import random
-from actor import Actor
-from utils import get_next_player
 import re
+
+from agent.models import ANET
+from agent.actor import Actor
+from environment.state_manager import StateManager
+from utils import get_next_player
 
 
 class TournamentOfProgressivePolicies:
