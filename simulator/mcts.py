@@ -6,6 +6,7 @@ from environment.state_manager import StateManager
 
 import logging
 
+
 class MonteCarloSearchTree:
 
     def __init__(self, actor, game_config, c=1):
@@ -119,13 +120,18 @@ class MonteCarloSearchTree:
         :param player: int
         :return: Node
         """
-        children = [(child, child.value) for child in self.root.children]
         # TODO: Should this stay, or be changed out with something dependent of D?
-        # Tree Policy = Maximise for P1 and minimize for P2
-        if player == 1:
+        total = True  # TODO: Testing difference here
+        if total:
+            children = [(child, child.total) for child in self.root.children]
             root, value = max(children, key=operator.itemgetter(1))
         else:
-            root, value = min(children, key=operator.itemgetter(1))
+            children = [(child, child.value) for child in self.root.children]
+            # Tree Policy = Maximise for P1 and minimize for P2
+            if player == 1:
+                root, value = max(children, key=operator.itemgetter(1))
+            else:
+                root, value = min(children, key=operator.itemgetter(1))
         return root
 
     def get_root_distribution(self):

@@ -37,6 +37,7 @@ class Visualizer:
         self.positions = self.calculate_positions()
 
         # Draw, action, draw
+        self.draw()
         for action in actions:
             self.game.perform_action(action)
             self.draw()
@@ -63,6 +64,8 @@ class Visualizer:
         self.draw_occupied_cells()
         self.draw_open_cells()
         self.draw_edges()
+        plt.xlabel("Red")
+        plt.ylabel("Black")
         plt.title('Hex')
         self.camera.snap()
 

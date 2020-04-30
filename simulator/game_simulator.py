@@ -55,19 +55,13 @@ class GameSimulator:
         """
         Run G consecutive games (aka. episodes) of the self.game_type using fixed values for the game parameters
         """
-        # Save interval for ANET (the actor network) parameters
-        save_interval = int(self.episodes / (self.save_interval - 1))
-
-        rbuf = ReplayBuffer()
-        visualizer = Visualizer(self.game_config)
-
-        # Initialize Actor which have ANET
-        actor = Actor(self.anet_config)
-
-        # Init a StateManager that takes care of the actual game
-        game = StateManager(self.game_config)
-
+        save_interval = int(self.episodes / (self.save_interval - 1))  # Save interval for ANET
+        rbuf = ReplayBuffer()  # Buffer for saving training data
+        visualizer = Visualizer(self.game_config)  # Visualizer that visualize games
+        actor = Actor(self.anet_config)  # Initialize Actor which have ANET
+        game = StateManager(self.game_config)  # Init a StateManager that takes care of the actual game
         wins = 0  # Number of times player 1 wins
+
         # Actual games being played
         for episode in range(1, self.episodes + 1):
             logging.info("Episode: {}".format(episode))
