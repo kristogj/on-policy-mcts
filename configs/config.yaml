@@ -28,6 +28,12 @@ mcts_config:
   # Decay rate epsilon
   dr_epsilon: 0.99
 
+  # Turn on/off visualizer
+  visualize: True
+
+  # Visualize every X epoch
+  visualize_interval: 20
+
 anet_config:
   # Learning rate for the neural net used by the actor
   lr_actor: 0.01

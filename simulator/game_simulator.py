@@ -8,6 +8,7 @@ from simulator.tree_node import Node
 from simulator.mcts import MonteCarloSearchTree
 from simulator.replay_buffer import ReplayBuffer
 from environment.state_manager import StateManager
+from graphs.visualizer import Visualizer
 
 
 class GameSimulator:
@@ -32,6 +33,8 @@ class GameSimulator:
         self.num_sim = self.mcts_config["num_sim"]
         self.epsilon = self.mcts_config["epsilon"]
         self.dr_epsilon = self.mcts_config["dr_epsilon"]
+        self.visualize = self.mcts_config["visualize"]
+        self.visualize_interval = self.mcts_config["visualize_interval"]
 
         self.save_interval = self.topp_config["M"]
         self.batch_size = self.anet_config["batch_size"]
@@ -56,6 +59,7 @@ class GameSimulator:
         save_interval = int(self.episodes / (self.save_interval - 1))
 
         rbuf = ReplayBuffer()
+        visualizer = Visualizer(self.game_config)
 
         # Initialize Actor which have ANET
         actor = Actor(self.anet_config)
@@ -70,6 +74,7 @@ class GameSimulator:
 
             # Initialize the actual game
             game.init_new_game()
+            action_log = []
 
             # Initialize the MonteCarloSearchTree to a single node with the initialized game state
             state, player = game.get_current_state(), self.get_start_player()
@@ -94,6 +99,7 @@ class GameSimulator:
 
                 # Select actual move based on D
                 new_root = mcts.select_actual_action(D, player)
+                action_log.append(new_root.action)
 
                 # Perform this action, moving the game from state s -> s´
                 game.perform_actual_action(new_root.action)
@@ -108,6 +114,8 @@ class GameSimulator:
                 self.epsilon *= self.dr_epsilon
 
             # End of episode
+            visualizer.add_game_log(action_log)
+
             # Train ANET on a random mini-batch of cases from ReplayBuffer
             mini_batch = rbuf.get_batch(self.batch_size)
             actor.train(mini_batch)
@@ -117,6 +125,10 @@ class GameSimulator:
                 path = "./pretrained/ANET_E{}.pth".format(episode)
                 logging.info("Saving model to file {}".format(path))
                 torch.save(actor.anet.state_dict(), path)
+
+            # Save visualization of last game
+            if self.visualize and episode % self.visualize_interval == 0:
+                visualizer.animate_latest_game()
 
             # If next player is 2 and we are in a win state, player 1 got us in a win state
             if player == 2:

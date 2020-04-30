@@ -146,9 +146,9 @@ class Hex(Game):
             p1_cell, p2_cell = self.board[0][x], self.board[x][0]
             w1, w2 = False, False
             if p1_cell.get_player() == 1:
-                w1 = self.dfs(p1_cell, p1_cell.get_player())
+                w1 = self.dfs(p1_cell, 1)
             if p2_cell.get_player() == 2:
-                w2 = self.dfs(p2_cell, p2_cell.get_player())
+                w2 = self.dfs(p2_cell, 2)
             if w1 or w2:
                 return True
         return False
