@@ -46,6 +46,7 @@ class Actor:
             self.anet = ANET(config)
             self.optimizer = self.optimizer = get_optimizer(self.anet.model, config["actor_optim"], config["lr_actor"])
 
+        self.log_softmax = nn.LogSoftmax(dim=1)
         self.losses = []
 
     def load_anet(self, name: str, anet: ANET):
@@ -121,7 +122,8 @@ class Actor:
         :return: index of action selected from the distribution D
         """
         D = self.get_conditional_distribution(player, state)
-        action_index = Categorical(D).sample().item()
+        # action_index = Categorical(D).sample().item()
+        action_index = torch.argmax(D).item()
         return action_index
 
     def train(self, batch: list) -> None:
@@ -132,17 +134,16 @@ class Actor:
         :return: None
         """
         X = torch.as_tensor([[node.player] + node.state for node, _ in batch], dtype=torch.float)
-        target = torch.as_tensor([torch.argmax(D).item() for _, D in batch], dtype=torch.long)
-        # TODO: Check target here
+        targets = torch.stack([D for _, D in batch], dim=0)
+
         # Zero the parameter gradients from in ANET
         self.optimizer.zero_grad()
 
         # Forward input through model
         out = self.anet(X)
-        out = F.softmax(out, dim=1)
 
-        # Calculate loss
-        loss = F.cross_entropy(out, target)
+        # Cross Entropy loss function
+        loss = torch.mean(torch.sum(- targets * self.log_softmax(out), 1))
 
         # Calculate gradients, and update weights
         loss.backward()
