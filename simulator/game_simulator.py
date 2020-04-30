@@ -88,6 +88,9 @@ class GameSimulator:
                 # Get the probability distribution over actions from current root/state.
                 D = mcts.get_root_distribution()
 
+                # Modifying D for obvious wins or other heuristics
+                D = game.apply_heuristics(mcts.root, D)
+
                 # Add (root, D) to Replay Buffer. This will later be used as training data for the actors policy
                 rbuf.add_case((mcts.root, D))
 

@@ -22,6 +22,7 @@ class StateManager:
 
     def __init__(self, game_config):
         self.game_config = game_config
+        self.game_type = game_config["game_type"]
         self.game = None
 
     def init_new_game(self):
@@ -80,8 +81,7 @@ class StateManager:
         :param action_index: int
         :return: Action
         """
-        game_type = self.game_config["game_type"]
-        if game_type == "hex":
+        if self.game_type == "hex":
             size = self.game_config["hex"]["board_size"]
             action_coord = index_to_coordinate(action_index, size)
             action = HexAction(player, action_coord)
@@ -108,13 +108,12 @@ class StateManager:
         :return: a probability distribution over actions
         """
         # TODO: The calculation of this could be wrong - should test more here
-        game_type = self.game_config["game_type"]
-        if game_type == "hex":
+        if self.game_type == "hex":
             size = self.game_config["hex"]["board_size"]
             D = torch.zeros((size, size), dtype=torch.float)
             for child in root.children:
                 row, col = child.action.get_coord()
-                D[row][col] = child.total   # TODO: Could use value here as well?
+                D[row][col] = child.total  # TODO: Could use value here as well?
 
             D = D.flatten(0)
             D = (D - D.mean()) / D.std()  # Normalize values to be smaller
@@ -125,4 +124,32 @@ class StateManager:
 
         else:
             raise ValueError("Distribution is not supported for this game type")
+        return D
+
+    def apply_heuristics(self, node: Node, D: torch.Tensor) -> torch.Tensor:
+        """
+        Modify D with additional heuristics like searching for obvious wins in next move
+        :param node: Node with selected action
+        :param D: probability distribution over actions
+        :return: potentially modified probability distribution over actions
+        """
+        if self.game_type == "hex":
+            state, player = node.state, node.player
+
+            # If first move in game, select center
+            if sum(state) == 0:
+                D.apply_(lambda x: 0)
+                D[len(state) // 2] = 1.0
+                return D
+
+            # Check for obvious wins in next move
+            for i, p in enumerate(D):
+                # If probability is higher than 50%, check if it could be a winning state
+                if p > 0.5:
+                    test_state = state.copy()
+                    test_state[i] = player
+                    if self.verify_winning_state(test_state):
+                        D.apply_(lambda x: 0)
+                        D[i] = 1.0
+                        return D
         return D
