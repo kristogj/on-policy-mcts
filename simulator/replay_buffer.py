@@ -1,5 +1,6 @@
 import random
 from collections import deque
+import numpy as np
 
 
 class ReplayBuffer:
@@ -16,7 +17,10 @@ class ReplayBuffer:
         """
         if batch_size > len(self.buffer):
             return self.buffer
-        return random.sample(self.buffer, batch_size)  # TODO: Do something smarter than a random?
+
+        # Do a weighted random choice, where newer cases are prioritized over older cases
+        weights = np.linspace(0, 1, len(self.buffer))
+        return random.choices(self.buffer, weights=weights, k=batch_size)
 
     def add_case(self, case):
         """
