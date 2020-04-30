@@ -4,6 +4,7 @@ from numpy import log, sqrt
 from utils import get_next_player
 from environment.state_manager import StateManager
 
+import logging
 
 class MonteCarloSearchTree:
 
@@ -51,11 +52,10 @@ class MonteCarloSearchTree:
         root = self.root
         children = root.get_children()
 
-        # While root is not a leaf node
-        while len(children) != 0:
+        # If root has more children and is not in a winning state, use the tree policy and select one of them
+        while len(children) != 0 and not self.state_manager.verify_winning_state(root.state):
             root = self.select(root)
             children = root.get_children()
-
         return root
 
     def expansion(self, leaf):
@@ -64,6 +64,10 @@ class MonteCarloSearchTree:
         housing the parent state (a.k.a. parent node) to the nodes housing the child states (a.k.a. child nodes).
         :return:
         """
+        # If already in a win state, no need for expansion
+        if self.state_manager.verify_winning_state(leaf.state):
+            return leaf
+
         # Get all legal child states from leaf state
         leaf.children = self.state_manager.get_child_nodes(leaf.player, leaf.state)
 

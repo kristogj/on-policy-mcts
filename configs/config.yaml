@@ -26,14 +26,14 @@ mcts_config:
   epsilon: 1
 
   # Decay rate epsilon
-  dr_epsilon: 0.97
+  dr_epsilon: 0.99
 
 anet_config:
   # Learning rate for the neural net used by the actor
-  lr_actor: 0.005
+  lr_actor: 0.01
 
   # Layer specs
-  actor_layer_specs: [10, 64, 9]
+  actor_layer_specs: [10, 128,  9]
 
   # Activation function for each layer e.g linear, sigmoid, tanh, relu
   actor_layer_func: ["tanh", "linear"]
@@ -42,7 +42,7 @@ anet_config:
   actor_optim: "adam"
 
   # Mini-batch size used when sampling from ReplayBuffer
-  batch_size: 32
+  batch_size: 64
 
 topp_config:
   # Number of times to save the current state of the actor during training.

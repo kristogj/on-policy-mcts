@@ -107,19 +107,22 @@ class StateManager:
         :param root: node representing the current state in the game
         :return: a probability distribution over actions
         """
+        # TODO: The calculation of this could be wrong - should test more here
         game_type = self.game_config["game_type"]
         if game_type == "hex":
             size = self.game_config["hex"]["board_size"]
-            D = torch.zeros((size, size))
+            D = torch.zeros((size, size), dtype=torch.float)
             for child in root.children:
                 row, col = child.action.get_coord()
-                D[row][col] = child.total  # TODO: Could use value here as well?
+                D[row][col] = child.total   # TODO: Could use value here as well?
+
             D = D.flatten(0)
             D = (D - D.mean()) / D.std()  # Normalize values to be smaller
             D = torch.exp(D)  # Calculate exp before re-normalizing softmax
             mask = torch.as_tensor([int(player == 0) for player in root.state], dtype=torch.int)
             D *= mask  # Set positions that are already taken to zero
             D /= torch.sum(D)  # Re-normalize values that are not equal to zero to sum up to 1
+
         else:
             raise ValueError("Distribution is not supported for this game type")
         return D
