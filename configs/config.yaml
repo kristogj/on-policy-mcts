@@ -39,7 +39,7 @@ anet_config:
   lr_actor: 0.01
 
   # Layer specs
-  actor_layer_specs: [10, 128,  9]
+  actor_layer_specs: [10, 128, 9]
 
   # Activation function for each layer e.g linear, sigmoid, tanh, relu
   actor_layer_func: ["tanh", "linear"]

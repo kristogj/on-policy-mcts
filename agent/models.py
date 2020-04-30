@@ -66,4 +66,6 @@ class ANET(nn.Module):
         :param game_state: input to the model
         :return: output from the model
         """
+        # TODO: Could it be smart to turn 2s into -1 to get the values in the range {-1,1}
+        game_state.apply_(lambda x: -1 if x == 2 else x)
         return self.model(game_state)
