@@ -133,7 +133,7 @@ class Actor:
         """
         X = torch.as_tensor([[node.player] + node.state for node, _ in batch], dtype=torch.float)
         target = torch.as_tensor([torch.argmax(D).item() for _, D in batch], dtype=torch.long)
-
+        # TODO: Check target here
         # Zero the parameter gradients from in ANET
         self.optimizer.zero_grad()
 

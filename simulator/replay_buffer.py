@@ -1,10 +1,12 @@
 import random
+from collections import deque
 
 
 class ReplayBuffer:
 
     def __init__(self):
-        self.buffer = []
+        self.buffer = deque()
+        self.max_len = 800
 
     def get_batch(self, batch_size):
         """
@@ -14,7 +16,7 @@ class ReplayBuffer:
         """
         if batch_size > len(self.buffer):
             return self.buffer
-        return random.sample(self.buffer, batch_size)
+        return random.sample(self.buffer, batch_size)  # TODO: Do something smarter than a random?
 
     def add_case(self, case):
         """
@@ -22,6 +24,8 @@ class ReplayBuffer:
         :param case: tuple(Node, FloatTensor)
         :return: None
         """
+        if len(self.buffer) > self.max_len:
+            self.buffer.popleft()
         self.buffer.append(case)
 
     def clear_cache(self):

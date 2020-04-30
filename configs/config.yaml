@@ -32,7 +32,7 @@ mcts_config:
   visualize: True
 
   # Visualize every X epoch
-  visualize_interval: 20
+  visualize_interval: 50
 
 anet_config:
   # Learning rate for the neural net used by the actor
@@ -58,7 +58,7 @@ topp_config:
 
   # Number of games to be played between any two ANET-based agents that meet during the round-robin
   # play of the TOPP
-  G: 25
+  G: 100
 
   # Folder to load all agents from
   agent_path: "./pretrained"
