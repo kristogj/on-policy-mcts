@@ -61,7 +61,7 @@ topp_config:
   G: 100
 
   # Folder to load all agents from
-  agent_path: "./pretrained"
+  agent_path: "./pretrained/topp3"
 
 
 

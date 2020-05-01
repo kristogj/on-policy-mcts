@@ -26,7 +26,7 @@ class TournamentOfProgressivePolicies:
         """
         logging.info("Loading models for Tournament...")
         file_paths = glob.glob(self.load_path + "/*.pth")
-        file_paths.sort(key=lambda name: int(re.findall(r'\d+', name)[0]))
+        file_paths.sort(key=lambda name: int(re.findall(r'\d+', name.split("/")[-1])[0]))
         agents = []
         for file_path in file_paths:
             actor = Actor(None, load_actor=True)
@@ -55,7 +55,7 @@ class TournamentOfProgressivePolicies:
             player = get_next_player(player)
 
         winner = get_next_player(player)
-        return winner
+        return actors[winner].name
 
     def start(self):
         """
@@ -64,10 +64,13 @@ class TournamentOfProgressivePolicies:
         """
         for i in range(len(self.agents)):
             for j in range(i + 1, len(self.agents)):
-                p1, p2 = self.agents[i], self.agents[j]
-                logging.info("Starting series between {} and {}".format(p1.name, p2.name))
-                wins = 0
+                p = [self.agents[j], self.agents[i]]
+                logging.info("Starting series between {} and {}".format(p[0].name, p[1].name))
+                score = {p[0].name: 0, p[1].name: 0}
                 for _ in range(self.num_games):
-                    winner = self.play_game(p1, p2)
-                    wins += int(winner == 2)
-                logging.info("{} wins {} of {} games against {} \n".format(p2.name, wins, self.num_games, p1.name))
+                    random.shuffle(p)
+                    winner = self.play_game(p[0], p[1])
+                    score[winner] += 1
+                p.sort(key=lambda player: -int(re.findall(r'\d+', player.name)[0]))  # Nicer scoreboard
+                p0, p1 = p[0].name, p[1].name
+                logging.info("{}: {}, {}: {} \n".format(p0, score[p0], p1, score[p1]))
