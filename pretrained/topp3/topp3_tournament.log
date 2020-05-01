@@ -1,0 +1,36 @@
+2020-05-01 11:30:17,343 [INFO ]  Loading models for Tournament...
+2020-05-01 11:30:17,344 [INFO ]  Initializing ANET - {'lr_actor': 0.01, 'actor_layer_specs': [26, 512, 256, 25], 'actor_layer_func': ['tanh', 'tanh', 'linear'], 'actor_optim': 'adam', 'batch_size': 64}
+2020-05-01 11:30:17,350 [INFO ]  Initializing ANET - {'lr_actor': 0.01, 'actor_layer_specs': [26, 512, 256, 25], 'actor_layer_func': ['tanh', 'tanh', 'linear'], 'actor_optim': 'adam', 'batch_size': 64}
+2020-05-01 11:30:17,355 [INFO ]  Initializing ANET - {'lr_actor': 0.01, 'actor_layer_specs': [26, 512, 256, 25], 'actor_layer_func': ['tanh', 'tanh', 'linear'], 'actor_optim': 'adam', 'batch_size': 64}
+2020-05-01 11:30:17,358 [INFO ]  Initializing ANET - {'lr_actor': 0.01, 'actor_layer_specs': [26, 512, 256, 25], 'actor_layer_func': ['tanh', 'tanh', 'linear'], 'actor_optim': 'adam', 'batch_size': 64}
+2020-05-01 11:30:17,362 [INFO ]  Initializing ANET - {'lr_actor': 0.01, 'actor_layer_specs': [26, 512, 256, 25], 'actor_layer_func': ['tanh', 'tanh', 'linear'], 'actor_optim': 'adam', 'batch_size': 64}
+2020-05-01 11:30:17,365 [INFO ]  Starting series between ANET_E250.pth and ANET_E1.pth
+2020-05-01 11:30:17,795 [INFO ]  ANET_E250.pth: 100, ANET_E1.pth: 0 
+
+2020-05-01 11:30:17,795 [INFO ]  Starting series between ANET_E500.pth and ANET_E1.pth
+2020-05-01 11:30:18,241 [INFO ]  ANET_E500.pth: 100, ANET_E1.pth: 0 
+
+2020-05-01 11:30:18,241 [INFO ]  Starting series between ANET_E750.pth and ANET_E1.pth
+2020-05-01 11:30:18,654 [INFO ]  ANET_E750.pth: 100, ANET_E1.pth: 0 
+
+2020-05-01 11:30:18,654 [INFO ]  Starting series between ANET_E1000.pth and ANET_E1.pth
+2020-05-01 11:30:19,230 [INFO ]  ANET_E1000.pth: 100, ANET_E1.pth: 0 
+
+2020-05-01 11:30:19,230 [INFO ]  Starting series between ANET_E500.pth and ANET_E250.pth
+2020-05-01 11:30:19,615 [INFO ]  ANET_E500.pth: 80, ANET_E250.pth: 20 
+
+2020-05-01 11:30:19,616 [INFO ]  Starting series between ANET_E750.pth and ANET_E250.pth
+2020-05-01 11:30:20,118 [INFO ]  ANET_E750.pth: 28, ANET_E250.pth: 72 
+
+2020-05-01 11:30:20,119 [INFO ]  Starting series between ANET_E1000.pth and ANET_E250.pth
+2020-05-01 11:30:20,519 [INFO ]  ANET_E1000.pth: 81, ANET_E250.pth: 19 
+
+2020-05-01 11:30:20,519 [INFO ]  Starting series between ANET_E750.pth and ANET_E500.pth
+2020-05-01 11:30:20,973 [INFO ]  ANET_E750.pth: 74, ANET_E500.pth: 26 
+
+2020-05-01 11:30:20,973 [INFO ]  Starting series between ANET_E1000.pth and ANET_E500.pth
+2020-05-01 11:30:21,357 [INFO ]  ANET_E1000.pth: 76, ANET_E500.pth: 24 
+
+2020-05-01 11:30:21,358 [INFO ]  Starting series between ANET_E1000.pth and ANET_E750.pth
+2020-05-01 11:30:21,724 [INFO ]  ANET_E1000.pth: 64, ANET_E750.pth: 36 
+
