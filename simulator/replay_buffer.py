@@ -5,9 +5,9 @@ import numpy as np
 
 class ReplayBuffer:
 
-    def __init__(self):
+    def __init__(self, max_len=800):
         self.buffer = deque()
-        self.max_len = 800
+        self.max_len = max_len
 
     def get_batch(self, batch_size):
         """
