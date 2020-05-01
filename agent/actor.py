@@ -163,5 +163,5 @@ class Actor:
         plt.xlabel("Episodes")
         plt.ylabel("Cross Entropy Loss")
         plt.plot(episodes, self.losses)
-        plt.savefig("./graphs/loss.png")
+        plt.savefig("./graphs/loss_actor.png")
         plt.show()
