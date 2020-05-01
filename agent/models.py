@@ -29,20 +29,6 @@ def init_weights(m: nn.Module) -> None:
         nn.init.xavier_uniform_(m.weight)
 
 
-def get_model(layer_specs, layer_functions):
-    model = nn.Sequential()
-    for x in range(1, len(layer_specs)):
-        layer = nn.Linear(in_features=layer_specs[x - 1], out_features=layer_specs[x])
-        model.add_module("L{}".format(x), layer)
-        if layer_functions[x - 1] != "linear":
-            function = get_function(layer_functions[x - 1])
-            model.add_module("A{}".format(x), function)
-
-    # Initialize weights and biases in the network
-    model.apply(init_weights)
-    return model
-
-
 class ANET(nn.Module):
 
     def __init__(self, config: dict) -> None:
@@ -55,7 +41,20 @@ class ANET(nn.Module):
             raise AttributeError("Illegal specs for ANET")
 
         # Use the given layer specs to initialize the model
-        self.model = get_model(self.layer_specs, self.layer_functions)
+        self.model = self.get_model()
+
+    def get_model(self):
+        model = nn.Sequential()
+        for x in range(1, len(self.layer_specs)):
+            layer = nn.Linear(in_features=self.layer_specs[x - 1], out_features=self.layer_specs[x])
+            model.add_module("L{}".format(x), layer)
+            if self.layer_functions[x - 1] != "linear":
+                function = get_function(self.layer_functions[x - 1])
+                model.add_module("A{}".format(x), function)
+
+        # Initialize weights and biases in the network
+        model.apply(init_weights)
+        return model
 
     def forward(self, game_state: torch.Tensor) -> torch.Tensor:
         """
@@ -64,24 +63,5 @@ class ANET(nn.Module):
         :return: output from the model
         """
         # TODO: Could it be smart to turn 2s into -1 to get the values in the range {-1,1}
-        game_state.apply_(lambda x: -1 if x == 2 else x)
-        return self.model(game_state)
-
-
-class CNET(nn.Module):
-
-    def __init__(self, config):
-        super(CNET, self).__init__()
-        logging.info("Initializing CNET - {}".format(config))
-        self.layer_specs = config["critic_layer_specs"]
-        self.layer_functions = config["critic_layer_func"]
-
-        if len(self.layer_specs) - 1 != len(self.layer_functions):
-            raise AttributeError("Illegal specs for CNET")
-
-        # Use the given layer specs to initialize the model
-        self.model = get_model(self.layer_specs, self.layer_functions)
-
-    def forward(self, game_state: torch.Tensor) -> torch.Tensor:
         game_state.apply_(lambda x: -1 if x == 2 else x)
         return self.model(game_state)

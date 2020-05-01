@@ -4,14 +4,14 @@ game_config:
 
   hex:
     # Size of Hex board where 3 <= size <= 10
-    board_size: 5
+    board_size: 6
 
   # Turn on/off game statistic/prints during games
   verbose: 0
 
 mcts_config:
   # Number of episodes (actual games played) in MCTS
-  episodes: 1000
+  episodes: 400
 
   # Number of simulations done in MCTS before every actual action in the game
   num_sim: 800
@@ -39,10 +39,26 @@ anet_config:
   lr_actor: 0.01
 
   # Layer specs
-  actor_layer_specs: [26, 512, 256, 25]
+  actor_layer_specs: [37, 512, 512, 256, 36]
 
   # Activation function for each layer e.g linear, sigmoid, tanh, relu
-  actor_layer_func: ["tanh", "tanh", "linear"]
+  actor_layer_func: ["tanh", "tanh", "tanh", "linear"]
+
+  # Optimizer used for training actor e.g adagrad, sgd, rmsprop, adam
+  actor_optim: "adam"
+
+  # Mini-batch size used when sampling from ReplayBuffer
+  batch_size: 64
+
+cnet_config:
+  # Learning rate for the neural net used by the actor
+  lr_actor: 0.01
+
+  # Layer specs
+  actor_layer_specs: [37, 512, 512, 256, 1]
+
+  # Activation function for each layer e.g linear, sigmoid, tanh, relu
+  actor_layer_func: ["tanh", "tanh", "tanh", "sigmoid"]
 
   # Optimizer used for training actor e.g adagrad, sgd, rmsprop, adam
   actor_optim: "adam"

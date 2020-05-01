@@ -9,7 +9,7 @@ from torch.optim.rmsprop import RMSprop
 from torch.optim.adam import Adam
 from torch.optim.sgd import SGD
 
-from agent.models import CNET
+from agent.models import ANET
 
 
 def get_optimizer(model: nn.Module, optim: str, lr: float) -> Optimizer:
@@ -40,13 +40,13 @@ class Critic:
             self.anet = None
             self.optimizer = None
         else:
-            self.cnet = CNET(config)
+            self.cnet = ANET(config)
             self.optimizer = get_optimizer(self.anet.model, config["actor_optim"], config["lr_actor"])
 
         self.criterion = nn.BCELoss()
         self.losses = []
 
-    def load_anet(self, name: str, cnet: CNET):
+    def load_anet(self, name: str, cnet: ANET):
         """
         Load pre-trained ANET into the Actor
         :param name: filename of the pre-trained network

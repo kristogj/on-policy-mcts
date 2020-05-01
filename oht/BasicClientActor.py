@@ -9,7 +9,7 @@ class BasicClientActor(BasicClientActorAbs):
     def __init__(self, IP_address=None, verbose=True):
         self.series_id = -1
         BasicClientActorAbs.__init__(self, IP_address, verbose=verbose)
-        self.actor = load_model("./oht/ANET_E200.pth")
+        self.actor = load_model("./pretrained/oht/OHT1.pth")
 
     def handle_get_action(self, state):
         """
@@ -42,6 +42,7 @@ class BasicClientActor(BasicClientActorAbs):
 
         """
         self.series_id = series_id
+        print("UNIQUE_ID: {}, SERIES_ID: {}, NUM_GAMES: {}".format(unique_id, series_id, num_games))
         #############################
         #
         #
@@ -56,6 +57,7 @@ class BasicClientActor(BasicClientActorAbs):
         :return
         """
         self.starting_player = start_player
+        print("PLAYER {} STARTS".format(start_player))
         #############################
         #
         #
