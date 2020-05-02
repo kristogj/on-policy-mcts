@@ -46,17 +46,17 @@ class Actor:
             self.anet = ANET(config)
             self.optimizer = get_optimizer(self.anet.model, config["optim"], config["lr"])
 
-        # Actor params
-        self.epsilon_actor = config["epsilon_actor"]
-        self.dr_epsilon_actor = config["dr_epsilon_actor"]
-        self.log_softmax = nn.LogSoftmax(dim=1)
-        self.losses_actor = []
+            # Actor params
+            self.epsilon_actor = config["epsilon_actor"]
+            self.dr_epsilon_actor = config["dr_epsilon_actor"]
+            self.log_softmax = nn.LogSoftmax(dim=1)
+            self.losses_actor = []
 
-        # Critic params
-        self.epsilon_critic = config["epsilon_critic"]
-        self.dr_epsilon_critic = config["dr_epsilon_critic"]
-        self.criterion_critic = nn.BCELoss()
-        self.losses_critic = []
+            # Critic params
+            self.epsilon_critic = config["epsilon_critic"]
+            self.dr_epsilon_critic = config["dr_epsilon_critic"]
+            self.criterion_critic = nn.BCELoss()
+            self.losses_critic = []
 
     def load_anet(self, name: str, anet: ANET):
         """
