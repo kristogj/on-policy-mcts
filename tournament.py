@@ -8,6 +8,7 @@ from agent.models import ANET
 from agent.actor import Actor
 from environment.state_manager import StateManager
 from utils import get_next_player
+from graphs.visualizer import Visualizer
 
 
 class TournamentOfProgressivePolicies:
@@ -17,6 +18,7 @@ class TournamentOfProgressivePolicies:
         self.load_path = config["agent_path"]
         self.anet_config = anet_config
         self.state_manager = StateManager(game_config)
+        self.visualizer = Visualizer(game_config)  # Visualizer that visualize games
         self.agents = self.load_agents()
 
     def load_agents(self):
@@ -47,15 +49,17 @@ class TournamentOfProgressivePolicies:
         actors = {1: p1, 2: p2}
         self.state_manager.init_new_game()
         player = random.randint(1, 2)  # Choose random player to start
+        action_log = []
         while not self.state_manager.is_winning_state():
             current_state = self.state_manager.get_current_state()
             action_index = actors[player].topp_policy(player, current_state)
             action = self.state_manager.get_action(player, action_index)
             self.state_manager.perform_actual_action(action)
             player = get_next_player(player)
+            action_log.append(action)
 
         winner = get_next_player(player)
-        return actors[winner].name
+        return actors[winner].name, action_log
 
     def start(self):
         """
@@ -69,8 +73,11 @@ class TournamentOfProgressivePolicies:
                 score = {p[0].name: 0, p[1].name: 0}
                 for _ in range(self.num_games):
                     random.shuffle(p)
-                    winner = self.play_game(p[0], p[1])
+                    winner, action_log = self.play_game(p[0], p[1])
                     score[winner] += 1
+                    self.visualizer.add_game_log(action_log)
+                    if random.random() > 0.98:
+                        self.visualizer.animate_latest_game()
                 p.sort(key=lambda player: -int(re.findall(r'\d+', player.name)[0]))  # Nicer scoreboard
                 p0, p1 = p[0].name, p[1].name
                 logging.info("{}: {}, {}: {} \n".format(p0, score[p0], p1, score[p1]))

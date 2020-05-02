@@ -3,6 +3,7 @@ from celluloid import Camera
 import networkx as nx
 
 from environment.game import Hex
+import logging
 
 
 class Visualizer:
@@ -45,6 +46,7 @@ class Visualizer:
         # Animate drawings
         animation = self.camera.animate(repeat=False, interval=500)
         animation.save("./graphs/animations/episode{}_animated.gif".format(game_index + 1), writer='pillow')
+        logging.info("Saved episode{}_animated.gif".format(game_index + 1))
         plt.close()
 
     def build_graph(self):
