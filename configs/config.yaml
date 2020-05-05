@@ -4,14 +4,14 @@ game_config:
 
   hex:
     # Size of Hex board where 3 <= size <= 10
-    board_size: 5
+    board_size: 3
 
   # Turn on/off game statistic/prints during games
   verbose: 0
 
 mcts_config:
   # Number of episodes (actual games played) in MCTS
-  episodes: 1000
+  episodes: 300
 
   # Number of simulations done in MCTS before every actual action in the game
   num_sim: 1000
@@ -33,10 +33,10 @@ anet_config:
   lr: 0.01
 
   # Layer specs
-  layer_specs: [26, 512, 512, 25]
+  layer_specs: [10, 64, 9]
 
   # Activation function for each layer e.g linear, sigmoid, tanh, relu
-  layer_func: ["tanh", "tanh", "linear"]
+  layer_func: ["tanh", "linear"]
 
   # Optimizer used for training actor e.g adagrad, sgd, rmsprop, adam
   optim: "adam"
@@ -61,7 +61,7 @@ topp_config:
   # Number of times to save the current state of the actor during training.
   # For example, if you are training for a total of 200 episodes with M=5, you will have ANETs trained for 0, 50, 100,
   # 150 and 200 episodes.
-  M: 10
+  M: 5
 
   # Number of games to be played between any two ANET-based agents that meet during the round-robin
   # play of the TOPP
