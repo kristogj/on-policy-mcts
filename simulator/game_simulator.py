@@ -31,8 +31,6 @@ class GameSimulator:
         self.starting_player = self.mcts_config["starting_player"]
         self.episodes = self.mcts_config["episodes"]
         self.num_sim = self.mcts_config["num_sim"]
-        self.epsilon = self.mcts_config["epsilon"]
-        self.dr_epsilon = self.mcts_config["dr_epsilon"]
         self.visualize = self.mcts_config["visualize"]
         self.visualize_interval = self.mcts_config["visualize_interval"]
 
@@ -56,9 +54,9 @@ class GameSimulator:
         Run G consecutive games (aka. episodes) of the self.game_type using fixed values for the game parameters
         """
         save_interval = int(self.episodes / (self.save_interval - 1))  # Save interval for ANET
-        rbuf = ReplayBuffer()  # Buffer for saving training data
         visualizer = Visualizer(self.game_config)  # Visualizer that visualize games
         actor = Actor(self.anet_config)  # Initialize Actor which have ANET
+        rbuf = ReplayBuffer()  # Buffer for saving training data (node, D)
         game = StateManager(self.game_config)  # Init a StateManager that takes care of the actual game
         wins = 0  # Number of times player 1 wins
 
@@ -82,7 +80,7 @@ class GameSimulator:
                     # One iteration of Monte Carlo Tree Search consists of four steps
                     leaf = mcts.selection()
                     sim_node = mcts.expansion(leaf)
-                    z = mcts.simulation(sim_node, epsilon=self.epsilon)
+                    z = mcts.simulation(sim_node)
                     mcts.backward(sim_node, z)
 
                 # Get the probability distribution over actions from current root/state.
@@ -91,11 +89,11 @@ class GameSimulator:
                 # Modifying D for obvious wins or other heuristics
                 D = game.apply_heuristics(mcts.root, D)
 
-                # Add (root, D) to Replay Buffer. This will later be used as training data for the actors policy
-                rbuf.add_case((mcts.root, D))
+                # Add training data to ReplayBuffers (node, D, reward)
+                rbuf.add_case((mcts.root, D, mcts.root.value))
 
                 # Select actual move based on D
-                new_root = mcts.select_actual_action(D, player)
+                new_root = mcts.select_actual_action(player)
                 action_log.append(new_root.action)
 
                 # Perform this action, moving the game from state s -> s´
@@ -107,15 +105,14 @@ class GameSimulator:
                 # Set new root of MCST
                 mcts.set_root(new_root)
 
-                # Update epsilon for next round of simulations
-                self.epsilon *= self.dr_epsilon
-
             # End of episode
             visualizer.add_game_log(action_log)
 
-            # Train ANET on a random mini-batch of cases from ReplayBuffer
-            mini_batch = rbuf.get_batch(self.batch_size)
-            actor.train(mini_batch)
+            # Update epsilon for next round of simulations
+            actor.update_epsilon()
+
+            # Train ANET and CNET on a random mini-batch of cases from ReplayBuffer
+            actor.train(rbuf.get_batch(self.batch_size))
 
             # Save ANET
             if episode % save_interval == 0 or episode == 1:

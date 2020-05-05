@@ -10,8 +10,8 @@ if __name__ == '__main__':
     game_simulator.simulate()
 
     # Play TOPP
-    # topp = TournamentOfProgressivePolicies(config["topp_config"], config["anet_config"], config["game_config"])
-    # topp.start()
+    #topp = TournamentOfProgressivePolicies(config["topp_config"], config["anet_config"], config["game_config"])
+    #topp.start()
 
     # bsa = BasicClientActor(verbose=True)
     # bsa.connect_to_server()

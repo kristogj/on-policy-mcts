@@ -1,10 +1,9 @@
 import operator
 from numpy import log, sqrt
+import random
 
 from utils import get_next_player
 from environment.state_manager import StateManager
-
-import logging
 
 
 class MonteCarloSearchTree:
@@ -12,6 +11,7 @@ class MonteCarloSearchTree:
     def __init__(self, actor, game_config, c=1):
         self.state_manager = StateManager(game_config)
         self.actor = actor
+        # self.critic = critic
         self.root = None
         self.c = c  # Exploration constant
         self.state_manager.init_new_game()
@@ -80,21 +80,28 @@ class MonteCarloSearchTree:
         # Tree is now expanded, return the leaf, and simulate to game over
         return leaf
 
-    def simulation(self, node, epsilon):
+    def simulation(self, node):
         """
         Leaf Evaluation - Estimating the value of a leaf node in the tree by doing a roll-out simulation using the
         default policy from the leaf node’s state to a final state.
         :return: int - The player who won the simulated game
         """
         current_state, player = node.state, node.player
-        while not self.state_manager.verify_winning_state(current_state):
-            # Get next action using the default policy
-            action_index = self.actor.default_policy(player, current_state, epsilon=epsilon)
-            current_state = self.state_manager.get_next_state(player, current_state, action_index)
-            player = get_next_player(player)
 
-        winner = get_next_player(player)  # Winner was actually the prev player who made a move
-        return int(winner == 1)
+        # Use Critic with a probability X
+        if random.random() > self.actor.epsilon_critic:
+            reward = self.actor.value_function(player, current_state)
+        # If not, simulate to end of game
+        else:
+            while not self.state_manager.verify_winning_state(current_state):
+                # Get next action using the default policy
+                action_index = self.actor.default_policy(player, current_state)
+                current_state = self.state_manager.get_next_state(player, current_state, action_index)
+                player = get_next_player(player)
+
+            winner = get_next_player(player)  # Winner was actually the prev player who made a move
+            reward = int(winner == 1)
+        return reward
 
     @staticmethod
     def backward(sim_node, z):
@@ -113,15 +120,13 @@ class MonteCarloSearchTree:
             node.value += (z - node.value) / node.total
             node = node.parent
 
-    def select_actual_action(self, D, player):
+    def select_actual_action(self, player):
         """
         To select the actual action to take in the game, select the edge with the highest visit count
-        :param D: distribution
         :param player: int
         :return: Node
         """
-        # TODO: Should this stay, or be changed out with something dependent of D?
-        total = True  # TODO: Testing difference here
+        total = True  # TODO: Testing difference here - total seems to work best
         if total:
             children = [(child, child.total) for child in self.root.children]
             root, value = max(children, key=operator.itemgetter(1))

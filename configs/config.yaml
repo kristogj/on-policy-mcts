@@ -4,29 +4,23 @@ game_config:
 
   hex:
     # Size of Hex board where 3 <= size <= 10
-    board_size: 6
+    board_size: 5
 
   # Turn on/off game statistic/prints during games
   verbose: 0
 
 mcts_config:
   # Number of episodes (actual games played) in MCTS
-  episodes: 400
+  episodes: 1000
 
   # Number of simulations done in MCTS before every actual action in the game
-  num_sim: 800
+  num_sim: 1000
 
   # Exploration constant
   c: 1
 
   # Which player should start
   starting_player: 1
-
-  # Epsilon for epsilon-greedy strategy with decay rate if changing
-  epsilon: 1
-
-  # Decay rate epsilon
-  dr_epsilon: 0.99
 
   # Turn on/off visualizer
   visualize: True
@@ -36,41 +30,38 @@ mcts_config:
 
 anet_config:
   # Learning rate for the neural net used by the actor
-  lr_actor: 0.01
+  lr: 0.01
 
   # Layer specs
-  actor_layer_specs: [37, 512, 512, 256, 36]
+  layer_specs: [26, 512, 512, 25]
 
   # Activation function for each layer e.g linear, sigmoid, tanh, relu
-  actor_layer_func: ["tanh", "tanh", "tanh", "linear"]
+  layer_func: ["tanh", "tanh", "linear"]
 
   # Optimizer used for training actor e.g adagrad, sgd, rmsprop, adam
-  actor_optim: "adam"
+  optim: "adam"
 
   # Mini-batch size used when sampling from ReplayBuffer
   batch_size: 64
 
-cnet_config:
-  # Learning rate for the neural net used by the actor
-  lr_actor: 0.01
+  # Probability of not using as actor
+  epsilon_actor: 1
 
-  # Layer specs
-  actor_layer_specs: [37, 512, 512, 256, 1]
+  # Decay rate epsilon actor
+  dr_epsilon_actor: 0.99
 
-  # Activation function for each layer e.g linear, sigmoid, tanh, relu
-  actor_layer_func: ["tanh", "tanh", "tanh", "sigmoid"]
+  # Probability of not using critic
+  epsilon_critic: 2 # Do not want to use critic in the start
 
-  # Optimizer used for training actor e.g adagrad, sgd, rmsprop, adam
-  actor_optim: "adam"
+  # Decay rate epsilon critic
+  dr_epsilon_critic: 0.996 # Not using critic when equal 1
 
-  # Mini-batch size used when sampling from ReplayBuffer
-  batch_size: 64
 
 topp_config:
   # Number of times to save the current state of the actor during training.
   # For example, if you are training for a total of 200 episodes with M=5, you will have ANETs trained for 0, 50, 100,
   # 150 and 200 episodes.
-  M: 5
+  M: 10
 
   # Number of games to be played between any two ANET-based agents that meet during the round-robin
   # play of the TOPP

@@ -107,7 +107,6 @@ class StateManager:
         :param root: node representing the current state in the game
         :return: a probability distribution over actions
         """
-        # TODO: The calculation of this could be wrong - should test more here
         if self.game_type == "hex":
             size = self.game_config["hex"]["board_size"]
             D = torch.zeros((size, size), dtype=torch.float)
@@ -121,7 +120,6 @@ class StateManager:
             mask = torch.as_tensor([int(player == 0) for player in root.state], dtype=torch.int)
             D *= mask  # Set positions that are already taken to zero
             D /= torch.sum(D)  # Re-normalize values that are not equal to zero to sum up to 1
-
         else:
             raise ValueError("Distribution is not supported for this game type")
         return D
